@@ -1,6 +1,8 @@
 package Ex_30;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameState {
     private int currentFloor;
@@ -8,6 +10,7 @@ public class GameState {
     private List<PlayerRecord> playerHistory;
     private List<Floor> gameFloors;
     private List<String> eliminatedPlayers;
+    private Set<Integer> visitedFloors;
     private List<String> completedPlayers;
     private int attemptsLeft;
     private List<String> allPlayers;
@@ -21,6 +24,7 @@ public class GameState {
         this.completedPlayers = completedPlayers;
         this.attemptsLeft = attemptsLeft;
         this.allPlayers = allPlayers;
+        this.visitedFloors = new HashSet<>();
     }
 
     public int getCurrentFloor() { return currentFloor; }
@@ -37,4 +41,14 @@ public class GameState {
     public int getAttemptsLeft() { return attemptsLeft; }
     public void setAttemptsLeft(int attemptsLeft) { this.attemptsLeft = attemptsLeft; }
     public List<String> getAllPlayers() { return allPlayers; }
+
+    public Set<Integer> getVisitedFloors() {
+        if (visitedFloors == null) {
+            visitedFloors = new HashSet<>();
+        }
+        return visitedFloors;
+    }
+    public void setVisitedFloors(Set<Integer> visitedFloors) {
+        this.visitedFloors = visitedFloors;
+    }
 }

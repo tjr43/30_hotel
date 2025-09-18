@@ -12,16 +12,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.HashSet;
+import java.io.File;
 
 public class GameGUI extends JFrame {
-    private static final String FILE_NAME = "game_state.json";
+    private static final String FILE_NAME = "invitation.json";
     private GameState gameState;
+    private boolean isFirstVisitTo1F = true;
 
     private static final int FINAL_FLOOR = 22;
     private static final int SPECIAL_TICKET_FLOOR = 7;
     private static final int INSTANT_DEFEAT_FLOOR = 17;
-
-    private boolean isGameStarted = false;
 
     private JTextArea displayArea;
     private JTextField answerField;
@@ -29,12 +30,12 @@ public class GameGUI extends JFrame {
     private JButton submitButton;
     private JButton goFloorButton;
     private JButton showMemosButton;
+    private JButton showRulesButton;
     private JButton exitButton;
 
     public GameGUI() {
         setTitle("방 탈출 게임");
 
-        // 화면에 맞게 창 크기 조정
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int screenWidth = gd.getDisplayMode().getWidth();
         int screenHeight = gd.getDisplayMode().getHeight();
@@ -55,9 +56,10 @@ public class GameGUI extends JFrame {
         answerField = new JTextField(20);
         floorField = new JTextField(5);
 
-        submitButton = new JButton("정답 제출");
+        submitButton = new JButton("시작");
         goFloorButton = new JButton("층 이동");
-        showMemosButton = new JButton("메모 확인");
+        showMemosButton = new JButton("메모");
+        showRulesButton = new JButton("규칙");
         exitButton = new JButton("게임 종료");
 
         JPanel southPanel = new JPanel();
@@ -70,6 +72,7 @@ public class GameGUI extends JFrame {
         southPanel.add(goFloorButton);
 
         southPanel.add(showMemosButton);
+        southPanel.add(showRulesButton);
         southPanel.add(exitButton);
 
         Container contentPane = getContentPane();
@@ -80,6 +83,7 @@ public class GameGUI extends JFrame {
         submitButton.addActionListener(this::handleSubmit);
         goFloorButton.addActionListener(this::handleFloorChange);
         showMemosButton.addActionListener(this::handleShowMemos);
+        showRulesButton.addActionListener(this::handleShowRules);
         exitButton.addActionListener(this::handleExit);
 
         loadGame();
@@ -88,39 +92,44 @@ public class GameGUI extends JFrame {
     }
 
     private void loadGame() {
+        File file = new File(FILE_NAME);
         Gson gson = new Gson();
-        try (FileReader reader = new FileReader(FILE_NAME)) {
-            gameState = gson.fromJson(reader, GameState.class);
-            displayArea.append("이전 게임을 불러왔습니다. 현재 층: " + gameState.getCurrentFloor() + "\n");
-            isGameStarted = true;
-            displayMemos();
-            promptForRiddle();
-        } catch (IOException e) {
-            displayArea.append("새로운 게임을 시작합니다.\n");
-            gameState = GameDataInitializer.createInitialState();
 
-            String input = JOptionPane.showInputDialog(this, "참가할 플레이어들의 이름을 쉼표(,)로 구분하여 입력하세요:");
-            List<String> players = new ArrayList<>();
-            if (input != null && !input.trim().isEmpty()) {
-                String[] playerNames = input.split(",");
-                for (String name : playerNames) {
-                    String trimmedName = name.trim();
-                    if (!trimmedName.isEmpty()) {
-                        players.add(trimmedName);
-                    }
-                }
+        if (file.exists() && file.length() > 0) {
+            try (FileReader reader = new FileReader(file)) {
+                gameState = gson.fromJson(reader, GameState.class);
+                startNewGame(true);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "게임 상태를 불러오는 데 실패했습니다. 새로운 게임을 시작합니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                startNewGame(false);
             }
-            if (players.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "최소 한 명의 플레이어 이름을 입력해야 합니다. 게임을 종료합니다.", "알림", JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
-            }
-            gameState.getAllPlayers().addAll(players);
-            gameState.setCurrentPlayerId(players.get(0));
-            gameState.setAttemptsLeft(2);
-            isGameStarted = false;
-
-            promptForRiddle();
+        } else {
+            startNewGame(false);
         }
+    }
+
+    private void startNewGame(boolean isLoaded) {
+        if (!isLoaded) {
+            gameState = GameDataInitializer.createInitialState();
+        }
+
+        String playerName = JOptionPane.showInputDialog(this, "참가할 플레이어의 이름을 입력하세요:");
+        if (playerName == null || playerName.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "이름을 입력해야 게임을 시작할 수 있습니다. 게임을 종료합니다.", "알림", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+
+        gameState.getAllPlayers().add(playerName.trim());
+        gameState.setCurrentPlayerId(playerName.trim());
+        gameState.setCurrentFloor(1);
+        gameState.setAttemptsLeft(2);
+
+        JOptionPane.showMessageDialog(this, gameState.getCurrentPlayerId() + "님, 호텔에 오신 것을 환영합니다.", "환영합니다", JOptionPane.INFORMATION_MESSAGE);
+
+        submitButton.setText("시작");
+        isFirstVisitTo1F = true;
+
+        promptForRiddle();
     }
 
     private void saveGame() {
@@ -133,47 +142,20 @@ public class GameGUI extends JFrame {
     }
 
     private void promptForRiddle() {
-        // 게임 클리어
-        if (gameState.getCompletedPlayers().contains(gameState.getCurrentPlayerId())) {
-            displayArea.append("\n축하합니다! 방 탈출에 성공했습니다. 메모가 기록되었습니다.\n");
-
-            // 다음 플레이어 확인 및 게임 계속
-            String nextPlayerId = getNextPlayerId(gameState.getCurrentPlayerId());
-            if (nextPlayerId != null) {
-                gameState.setCurrentPlayerId(nextPlayerId);
-                gameState.setAttemptsLeft(2);
-                gameState.setCurrentFloor(1); // 다음 플레이어는 1층부터 시작
-                displayArea.append("게임이 계속됩니다. 다음 플레이어: " + gameState.getCurrentPlayerId() + "\n");
-                promptForRiddle();
+        if (gameState.getCurrentFloor() == 1) {
+            if (isFirstVisitTo1F) {
+                displayArea.append("--- 호텔에 오신 것을 환영합니다! ---");
+                displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.");
+                displayArea.append("\n\n아래의 '규칙'을 눌러 규칙을 확인해 주시길 바랍니다");
+                isFirstVisitTo1F = false;
             } else {
-                displayArea.append("\n모든 플레이어가 게임을 완료했거나 탈락했습니다. 게임 종료!\n");
-                submitButton.setEnabled(false);
-                goFloorButton.setEnabled(false);
-                answerField.setEnabled(false);
-                floorField.setEnabled(false);
+                displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.");
             }
-            return;
-        }
-
-        // 게임 시작 시 초기 안내 메시지
-        if (!isGameStarted) {
-            displayArea.append("\n--- 호텔에 오신 것을 환영합니다! ---\n");
-            displayArea.append("현재 계신 곳은 1층 안내데스크 입니다.\n");
-            displayArea.append("규칙을 잘 읽고 게임을 플레이 해 주시길 바랍니다.\n");
-            displayArea.append("\n1. 게임 전체적으로 2번의 기회가 주어집니다. 퀴즈를 틀리면 기회를 1회 잃고 1층으로 돌아갑니다.\n");
-            displayArea.append("2. 원하는 층 번호를 입력하고 '층 이동' 버튼을 누르세요.\n");
-            displayArea.append("3. 게임을 시작하려면 '정답 제출' 버튼을 누르세요. 원하는 층으로 바로 이동하려면 '층 이동' 버튼을 누르세요.\n");
-            isGameStarted = true;
-        } else if (gameState.getCurrentFloor() == 1) {
-            displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.\n");
         } else {
-            // 일반적인 퀴즈 층
             Floor currentFloor = gameState.getGameFloors().get(gameState.getCurrentFloor() - 1);
 
-            // 7층 특별 처리
             if (currentFloor.getFloorNumber() == SPECIAL_TICKET_FLOOR) {
-                displayArea.append("\n--- " + currentFloor.getFloorNumber() + "층입니다. 현재 플레이어: " + gameState.getCurrentPlayerId() + " ---\n");
-                displayArea.append("남은 기회: " + gameState.getAttemptsLeft() + "\n");
+                displayArea.append("\n--- " + currentFloor.getFloorNumber() + "층입니다. ---\n");
                 if (gameState.getAttemptsLeft() == 2) {
                     gameState.setAttemptsLeft(1);
                     displayArea.append("함정에 걸려 기회를 1개 잃습니다. (남은 기회: " + gameState.getAttemptsLeft() + ")\n");
@@ -181,12 +163,10 @@ public class GameGUI extends JFrame {
                     gameState.setAttemptsLeft(2);
                     displayArea.append("티켓을 획득하여 남은 기회가 2개가 됩니다. (남은 기회: " + gameState.getAttemptsLeft() + ")\n");
                 }
-                return; // 퀴즈가 없으므로 여기서 함수 종료
+                return;
             }
 
-            // 일반 층 (퀴즈 제공)
-            displayArea.append("\n--- " + currentFloor.getFloorNumber() + "층입니다. 현재 플레이어: " + gameState.getCurrentPlayerId() + " ---\n");
-            displayArea.append("남은 기회: " + gameState.getAttemptsLeft() + "\n");
+            displayArea.append("\n--- " + currentFloor.getFloorNumber() + "층입니다. ---\n");
             displayArea.append("함정: " + currentFloor.getTraps().get(0).getDescription() + "\n");
             displayArea.append("수수께끼: " + currentFloor.getTraps().get(0).getRiddle() + "\n");
         }
@@ -196,15 +176,13 @@ public class GameGUI extends JFrame {
         String userAnswer = answerField.getText().trim();
         answerField.setText("");
 
-        // 정답 제출 버튼을 누르면 시작
-        if (!isGameStarted) {
-            isGameStarted = true;
-            displayArea.append("\n게임이 시작되었습니다! 원하는 층으로 이동하세요.\n");
-            displayArea.append("층을 입력하고 '층 이동' 버튼을 누르세요.\n");
+        if (submitButton.getText().equals("시작")) {
+            submitButton.setText("정답 제출");
+            displayArea.append("\n\n게임이 시작되었습니다! 원하는 층으로 이동하세요.");
+            displayArea.append("\n층을 입력하고 '층 이동' 버튼을 누르세요.\n");
             return;
         }
 
-        // 층 이동 버튼을 누르라는 안내
         if (gameState.getCurrentFloor() == 1) {
             displayArea.append("\n층을 입력하고 '층 이동' 버튼을 누르세요.\n");
             return;
@@ -224,7 +202,6 @@ public class GameGUI extends JFrame {
         if (userAnswer.equalsIgnoreCase(currentFloor.getTraps().get(0).getAnswer())) {
             displayArea.append("정답입니다! 다음 층으로 이동하세요.\n");
 
-            // 최종 층 클리어
             if (gameState.getCurrentFloor() == FINAL_FLOOR) {
                 handleWin();
             }
@@ -249,6 +226,8 @@ public class GameGUI extends JFrame {
 
             if (newFloor < 1 || newFloor > totalFloors) {
                 JOptionPane.showMessageDialog(this, "유효하지 않은 층 번호입니다. 1에서 " + totalFloors + " 사이의 숫자를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+            } else if (gameState.getVisitedFloors().contains(newFloor) && newFloor != 1) {
+                JOptionPane.showMessageDialog(this, "이미 방문했던 층입니다. 1층으로는 돌아갈 수 있습니다.", "오류", JOptionPane.ERROR_MESSAGE);
             } else {
                 if (newFloor == INSTANT_DEFEAT_FLOOR) {
                     displayArea.append("플레이어가 " + newFloor + "층으로 이동했습니다. 함정에 걸려 즉시 탈락합니다!\n");
@@ -257,6 +236,7 @@ public class GameGUI extends JFrame {
                 }
 
                 gameState.setCurrentFloor(newFloor);
+                gameState.getVisitedFloors().add(newFloor);
                 displayArea.append("플레이어가 " + newFloor + "층으로 이동했습니다.\n");
 
                 promptForRiddle();
@@ -268,46 +248,38 @@ public class GameGUI extends JFrame {
     }
 
     private void handleGameOver() {
-        String userName = JOptionPane.showInputDialog(this, "당신의 이름을 입력하세요:");
         String memo = JOptionPane.showInputDialog(this, "다음 플레이어를 위한 메모를 남겨주세요:");
 
-        PlayerRecord newRecord = new PlayerRecord(userName, gameState.getCurrentFloor(), memo, "fail");
+        PlayerRecord newRecord = new PlayerRecord(gameState.getCurrentPlayerId(), gameState.getCurrentFloor(), memo, "fail");
         gameState.getPlayerHistory().add(newRecord);
 
-        gameState.getEliminatedPlayers().add(gameState.getCurrentPlayerId());
-
         displayArea.append("\n" + gameState.getCurrentPlayerId() + "님, 게임 오버! 메모가 기록되었습니다.\n");
-
-        String nextPlayerId = getNextPlayerId(gameState.getCurrentPlayerId());
-
-        if (nextPlayerId != null) {
-            gameState.setCurrentPlayerId(nextPlayerId);
-            gameState.setAttemptsLeft(2);
-            gameState.setCurrentFloor(1); // 다음 플레이어는 1층부터 시작
-            displayArea.append("다음 플레이어: " + gameState.getCurrentPlayerId() + "님이 게임을 시작합니다.\n");
-            promptForRiddle();
-        } else {
-            displayArea.append("모든 플레이어가 탈락했습니다. 게임 종료!");
-            submitButton.setEnabled(false);
-            goFloorButton.setEnabled(false);
-            answerField.setEnabled(false);
-            floorField.setEnabled(false);
-        }
+        displayArea.append("게임을 다시 시작하려면 창을 닫고 다시 실행해 주세요.\n");
 
         saveGame();
+
+        JOptionPane.showMessageDialog(this, "게임 오버! 게임을 종료합니다.");
+        System.exit(0);
     }
 
-    private String getNextPlayerId(String currentId) {
-        int currentIndex = gameState.getAllPlayers().indexOf(currentId);
-        int totalPlayers = gameState.getAllPlayers().size();
+    private void handleShowRules(ActionEvent e) {
+        JDialog rulesDialog = new JDialog(this, "게임 규칙", true);
+        rulesDialog.setSize(1100, 900);
+        rulesDialog.setLocationRelativeTo(this);
 
-        for (int i = 1; i <= totalPlayers; i++) {
-            String nextId = gameState.getAllPlayers().get((currentIndex + i) % totalPlayers);
-            if (!gameState.getEliminatedPlayers().contains(nextId) && !gameState.getCompletedPlayers().contains(nextId)) {
-                return nextId;
-            }
-        }
-        return null;
+        JTextArea rulesArea = new JTextArea();
+        rulesArea.setEditable(false);
+        rulesArea.setMargin(new Insets(10, 10, 10, 10));
+        rulesArea.setText(
+                "--- 호텔에 오신 것을 환영합니다! ---\n\n" +
+                        "규칙을 잘 읽고 게임을 플레이 해 주시길 바랍니다.\n\n" +
+                        "1. 게임 전체적으로 2번의 기회가 주어집니다. 퀴즈를 틀리면 기회를 1회 잃고 1층으로 돌아갑니다.\n\n" +
+                        "2. 원하는 층 번호를 입력하고 '층 이동' 버튼을 누르세요.\n\n" +
+                        "3. 플레이어는 한번 방문했던 층은 다시 방문할 수 없습니다. (1층 제외)"
+        );
+        rulesArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        rulesDialog.add(new JScrollPane(rulesArea));
+        rulesDialog.setVisible(true);
     }
 
     private void handleShowMemos(ActionEvent e) {
@@ -315,43 +287,44 @@ public class GameGUI extends JFrame {
     }
 
     private void displayMemos() {
-        if (!gameState.getPlayerHistory().isEmpty()) {
-            displayArea.append("\n--- 이전 플레이어들의 메모 ---\n\n"); // 한 줄 띄어쓰기 추가
+        JDialog memoDialog = new JDialog(this, "이전 플레이어의 메모", true);
+        memoDialog.setSize(500, 400);
+        memoDialog.setLocationRelativeTo(this);
+
+        JTextArea memoArea = new JTextArea();
+        memoArea.setEditable(false);
+        memoArea.setMargin(new Insets(10, 10, 10, 10));
+        memoArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+
+        if (gameState.getPlayerHistory().isEmpty()) {
+            memoArea.setText("--- 이전 플레이어의 메모가 없습니다. ---");
+        } else {
+            StringBuilder memos = new StringBuilder();
+            memos.append("--- 이전 플레이어들의 메모 ---\n\n");
             for (PlayerRecord record : gameState.getPlayerHistory()) {
-                displayArea.append("플레이어 " + record.getPlayerId() + ": " + record.getMemo() + "\n");
+                memos.append("플레이어 " + record.getPlayerId() + ": " + record.getMemo() + "\n\n");
             }
-            displayArea.append("---------------------------\n");
+            memoArea.setText(memos.toString());
         }
+
+        memoDialog.add(new JScrollPane(memoArea));
+        memoDialog.setVisible(true);
     }
 
     private void handleWin() {
-        String userName = JOptionPane.showInputDialog(this, "탈출 성공! 당신의 이름을 입력하세요:");
         String memo = JOptionPane.showInputDialog(this, "다음 플레이어를 위한 메모를 남겨주세요:");
 
-        PlayerRecord newRecord = new PlayerRecord(userName, FINAL_FLOOR, memo, "success");
+        PlayerRecord newRecord = new PlayerRecord(gameState.getCurrentPlayerId(), FINAL_FLOOR, memo, "success");
         gameState.getPlayerHistory().add(newRecord);
-
         gameState.getCompletedPlayers().add(gameState.getCurrentPlayerId());
 
         displayArea.append("축하합니다! 방 탈출에 성공했습니다. 메모가 기록되었습니다.\n");
-
-        String nextPlayerId = getNextPlayerId(gameState.getCurrentPlayerId());
-
-        if (nextPlayerId != null) {
-            gameState.setCurrentPlayerId(nextPlayerId);
-            gameState.setAttemptsLeft(2);
-            gameState.setCurrentFloor(1); // 다음 플레이어는 1층부터 시작
-            displayArea.append("게임이 계속됩니다. 다음 플레이어: " + gameState.getCurrentPlayerId() + "님.\n");
-            promptForRiddle();
-        } else {
-            displayArea.append("모든 플레이어가 게임을 완료했거나 탈락했습니다. 게임 종료!");
-            submitButton.setEnabled(false);
-            goFloorButton.setEnabled(false);
-            answerField.setEnabled(false);
-            floorField.setEnabled(false);
-        }
+        displayArea.append("게임을 다시 시작하려면 창을 닫고 다시 실행해 주세요.\n");
 
         saveGame();
+
+        JOptionPane.showMessageDialog(this, "탈출 성공! 게임을 종료합니다.");
+        System.exit(0);
     }
 
     private void handleExit(ActionEvent e) {

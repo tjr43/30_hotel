@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-//게임 처음 시작시 초기 데이터 생성
+// 게임 처음 시작 시 초기 데이터 생성
 public class GameDataInitializer {
     private static final List<Trap> ALL_TRAPS = Arrays.asList(
             new Trap("숫자 퍼즐", "2, 4, 6, 8... 다음 숫자는?", "10"),
