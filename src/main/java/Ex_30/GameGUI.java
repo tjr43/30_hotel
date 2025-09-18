@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.HashSet;
 import java.io.File;
+import java.util.Set;
 
 public class GameGUI extends JFrame {
     private static final String FILE_NAME = "invitation.json";
@@ -119,12 +120,17 @@ public class GameGUI extends JFrame {
             System.exit(0);
         }
 
+        if (gameState.getAllPlayers().contains(playerName.trim())) {
+            JOptionPane.showMessageDialog(this, "한번 방문하신 분은 재입장하실 수 없습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
+        }
+
         gameState.getAllPlayers().add(playerName.trim());
         gameState.setCurrentPlayerId(playerName.trim());
         gameState.setCurrentFloor(1);
         gameState.setAttemptsLeft(2);
 
-        JOptionPane.showMessageDialog(this, gameState.getCurrentPlayerId() + "님, 호텔 면목에 오신 것을 환영합니다.", "환영합니다", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, gameState.getCurrentPlayerId() + "님, 호텔에 오신 것을 환영합니다.", "환영합니다", JOptionPane.INFORMATION_MESSAGE);
 
         submitButton.setText("시작");
         isFirstVisitTo1F = true;
@@ -144,12 +150,12 @@ public class GameGUI extends JFrame {
     private void promptForRiddle() {
         if (gameState.getCurrentFloor() == 1) {
             if (isFirstVisitTo1F) {
-                displayArea.append("--- 호텔 면목에 오신 것을 환영합니다! ---");
+                displayArea.append("--- 호텔에 오신 것을 환영합니다! ---");
                 displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.");
-                displayArea.append("\n아래의 '규칙'을 눌러 규칙을 확인해 주시길 바랍니다");
+                displayArea.append("\n\n아래의 '규칙'을 눌러 규칙을 확인해 주시길 바랍니다");
                 isFirstVisitTo1F = false;
             } else {
-                displayArea.append("\n\n현재 계신 곳은 1층 안내데스크입니다.\n");
+                displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.");
             }
         } else {
             Floor currentFloor = gameState.getGameFloors().get(gameState.getCurrentFloor() - 1);
@@ -209,7 +215,7 @@ public class GameGUI extends JFrame {
         } else {
             gameState.setAttemptsLeft(gameState.getAttemptsLeft() - 1);
             if (gameState.getAttemptsLeft() > 0) {
-                displayArea.append("틀렸습니다! 기회를 1회 잃고 1층으로 돌아갑니다. 남은 기회: " + gameState.getAttemptsLeft());
+                displayArea.append("틀렸습니다! 기회를 1회 잃고 1층으로 돌아갑니다. 남은 기회: " + gameState.getAttemptsLeft() + "\n");
                 gameState.setCurrentFloor(1);
                 promptForRiddle();
             } else {
@@ -237,7 +243,7 @@ public class GameGUI extends JFrame {
                 }
 
                 gameState.setCurrentFloor(newFloor);
-                displayArea.append("플레이어가 " + newFloor + "층으로 이동했습니다.\n");
+                displayArea.append("\n플레이어가 " + newFloor + "층으로 이동했습니다.\n");
 
                 promptForRiddle();
             }
@@ -271,27 +277,28 @@ public class GameGUI extends JFrame {
         rulesArea.setEditable(false);
         rulesArea.setMargin(new Insets(10, 10, 10, 10));
         rulesArea.setText(
-                        "1️ 게임 구조\n" +
+                "1️⃣ 게임 구조\n" +
                         "1.1 이 호텔은 총 30층으로 구성되어 있습니다.\n" +
                         "   - 1층: 안내 데스크\n" +
                         "   - 2~30층: 랜덤 퀴즈/이벤트 층\n" +
                         "1.2 플레이어는 층 번호를 직접 입력하여 원하는 층으로 이동할 수 있습니다.\n\n" +
-                        "2 클리어 및 탈락 조건\n" +
+                        "2️⃣ 클리어 및 탈락 조건\n" +
                         "2.1 클리어 조건: 1층을 제외한 특정 층에서 퀴즈의 정답을 맞추면 클리어입니다.\n" +
-                        "2.2 방의 문제를 맞추더라도 탈출 층이 아닐 수 있습니다.\n" +
-                        "2.3 모든 플레이어는 2번의 기회를 가지고 있습니다.\n" +
-                        "2.4 문제를 틀리면 1층 안내 데스크로 돌아가고 기회가 소진됩니다.\n\n" +
-                        "4️ 메모\n" +
+                        "2.2 실패 시: 클리어 층이 아닌 곳에서 정답을 맞추면 1층 안내 데스크로 돌아갑니다.\n" +
+                        "2.3 첫 탈출자 혜택: 제작자에게 연락하면 커피 쿠폰을 드립니다.\n\n" +
+                        "3️⃣ 플레이어 기회\n" +
+                        "3.1 모든 플레이어는 2번의 기본 기회를 가지고 있습니다.\n" +
+                        "3.2 문제를 틀리면 1층 안내 데스크로 돌아가고 기회가 소진됩니다.\n" +
+                        "3.3 필요 시 초대장(파일)을 받은 플레이어가 게임을 이어갈 수 있습니다.\n\n" +
+                        "4️⃣ 메모 시스템\n" +
                         "4.1 플레이어는 게임 클리어 또는 실패 후 메모를 남길 수 있습니다.\n" +
                         "4.2 메모는 들어온 순서대로 기록됩니다.\n" +
                         "4.3 메모의 내용은 자유로우며, 거짓말을 적어도 상관없습니다.\n" +
                         "4.4 메모 작성은 선택 사항입니다.\n\n" +
-                        "5️ 게임 진행\n" +
+                        "5️⃣ 게임 진행\n" +
                         "5.1 게임을 클리어 해도 게임은 멈추지 않고 계속 진행됩니다.\n" +
                         "5.2 게임을 클러어 하지 못해도 게임은 멈추지 않고 계속 진행됩니다.\n" +
-                        "5.3 게임은 초대장(파일)을 받은 플레이거가 게임을 이어갈 수 있습니다.\n"+
-                        "5.4 게임은 마지막에 초대장(파일)을 받은 사람이 다음 사람에게 전송하지 않으면 종료됩니다.\n\n" +
-                        "5.5 첫 탈출자 혜택: 제작자에게 연락하면 커피 쿠폰을 드립니다.\n" +
+                        "5.3 게임은 마지막에 초대장을 받은 사람이 다음 사람에게 전송하지 않으면 종료됩니다.\n\n" +
                         "게임을 시작하려면 아래의 '시작' 버튼을 눌러주세요."
         );
         rulesArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -333,7 +340,7 @@ public class GameGUI extends JFrame {
 
         PlayerRecord newRecord = new PlayerRecord(gameState.getCurrentPlayerId(), FINAL_FLOOR, memo, "success");
         gameState.getPlayerHistory().add(newRecord);
-        gameState.getCompletedPlayers().add(gameState.getCurrentPlayerId());
+        gameState.getCompletedFloors().add(gameState.getCurrentFloor());
 
         displayArea.append("축하합니다! 방 탈출에 성공했습니다. 메모가 기록되었습니다.\n");
         displayArea.append("게임을 다시 시작하려면 창을 닫고 다시 실행해 주세요.\n");
