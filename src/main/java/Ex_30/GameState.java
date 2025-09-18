@@ -24,10 +24,10 @@ public class GameState {
     }
 
     public int getCurrentFloor() { return currentFloor; }
-    public void setCurrentFloor(int currentFloor) { this.currentFloor = currentFloor; } // setter 추가
+    public void setCurrentFloor(int currentFloor) { this.currentFloor = currentFloor; }
 
     public String getCurrentPlayerId() { return currentPlayerId; }
-    public void setCurrentPlayerId(String currentPlayerId) { this.currentPlayerId = currentPlayerId; } // setter 추가
+    public void setCurrentPlayerId(String currentPlayerId) { this.currentPlayerId = currentPlayerId; }
 
     public List<PlayerRecord> getPlayerHistory() { return playerHistory; }
     public List<String> getEliminatedPlayers() { return eliminatedPlayers; }

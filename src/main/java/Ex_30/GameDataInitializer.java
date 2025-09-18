@@ -37,6 +37,3 @@ public class GameDataInitializer {
         return new GameState(1, null, new ArrayList<>(), gameFloors, new ArrayList<>(), new ArrayList<>(), 2, new ArrayList<>());
     }
 }
-
-
-
