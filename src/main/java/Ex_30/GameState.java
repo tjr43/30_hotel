@@ -11,6 +11,7 @@ public class GameState {
     private List<Floor> gameFloors;
     private List<String> eliminatedPlayers;
     private Set<Integer> visitedFloors;
+    private Set<Integer> completedFloors;
     private List<String> completedPlayers;
     private int attemptsLeft;
     private List<String> allPlayers;
@@ -25,6 +26,7 @@ public class GameState {
         this.attemptsLeft = attemptsLeft;
         this.allPlayers = allPlayers;
         this.visitedFloors = new HashSet<>();
+        this.completedFloors = new HashSet<>();
     }
 
     public int getCurrentFloor() { return currentFloor; }
@@ -50,5 +52,15 @@ public class GameState {
     }
     public void setVisitedFloors(Set<Integer> visitedFloors) {
         this.visitedFloors = visitedFloors;
+    }
+
+    public Set<Integer> getCompletedFloors() {
+        if (completedFloors == null) {
+            completedFloors = new HashSet<>();
+        }
+        return completedFloors;
+    }
+    public void setCompletedFloors(Set<Integer> completedFloors) {
+        this.completedFloors = completedFloors;
     }
 }
