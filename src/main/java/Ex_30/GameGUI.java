@@ -26,6 +26,7 @@ public class GameGUI extends JFrame {
     private static final int SPECIAL_TICKET_FLOOR = 7;
     private static final int INSTANT_DEFEAT_FLOOR = 17;
 
+    // ⭐ UI 컴포넌트
     private JTextArea displayArea;
     private JTextField answerField;
     private JTextField floorField;
@@ -35,9 +36,12 @@ public class GameGUI extends JFrame {
     private JButton showRulesButton;
     private JButton exitButton;
 
-    // ⭐ 타이머 변수 추가
-    private Timer gameTimer;
-    private static final int TIME_LIMIT = 20000; // 30초 (밀리초 단위)
+    // ⭐ 타이머와 층 정보 표시를 위한 라벨 및 변수
+    private JLabel timerLabel;
+    private JLabel floorLabel;
+    private Timer visualTimer;
+    private int remainingTime;
+    private static final int TIME_LIMIT = 20; // 20초 (초 단위)
 
     public GameGUI() {
         setTitle("호텔 면목");
@@ -49,6 +53,17 @@ public class GameGUI extends JFrame {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        // ⭐ 상단 패널 생성 및 라벨 추가
+        JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        floorLabel = new JLabel("현재 층: --");
+        floorLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+
+        timerLabel = new JLabel("남은 시간: --초");
+        timerLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+
+        northPanel.add(floorLabel);
+        northPanel.add(timerLabel);
 
         displayArea = new JTextArea();
         displayArea.setEditable(false);
@@ -83,6 +98,7 @@ public class GameGUI extends JFrame {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
+        contentPane.add(northPanel, BorderLayout.NORTH);
         contentPane.add(scrollPane, BorderLayout.CENTER);
         contentPane.add(southPanel, BorderLayout.SOUTH);
 
@@ -115,6 +131,11 @@ public class GameGUI extends JFrame {
     }
 
     private void startNewGame(boolean isLoaded) {
+        if (visualTimer != null) {
+            visualTimer.stop();
+        }
+        timerLabel.setText("남은 시간: --초");
+
         if (!isLoaded) {
             gameState = GameDataInitializer.createInitialState();
         }
@@ -135,7 +156,7 @@ public class GameGUI extends JFrame {
         gameState.setCurrentFloor(1);
         gameState.setAttemptsLeft(2);
 
-        JOptionPane.showMessageDialog(this, gameState.getCurrentPlayerId() + "님, 호텔 면목에 오신 것을 환영합니다.", "환영합니다", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, gameState.getCurrentPlayerId() + "님, 호텔에 오신 것을 환영합니다.", "환영합니다", JOptionPane.INFORMATION_MESSAGE);
 
         submitButton.setText("시작");
         isFirstVisitTo1F = true;
@@ -154,17 +175,23 @@ public class GameGUI extends JFrame {
 
     private void promptForRiddle() {
         if (gameState.getCurrentFloor() == 1) {
+            if (visualTimer != null) {
+                visualTimer.stop();
+            }
+            timerLabel.setText(""); // ⭐ 1층에서는 타이머를 숨김
+            floorLabel.setText("현재 층: 1층");
             if (isFirstVisitTo1F) {
                 displayArea.append("--- 호텔에 오신 것을 환영합니다! ---\n");
                 displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.");
                 displayArea.append("\n\n아래의 '규칙'을 눌러 규칙을 확인해 주시길 바랍니다\n");
-                displayArea.append("게임을 시작하시려면 아래의 '시작' 버튼을 눌러주세요\n");
+                displayArea.append("게임을 시작하려면 아래의 \"시작\" 버튼을 눌러주세요.");
                 isFirstVisitTo1F = false;
             } else {
-                displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.");
+                displayArea.append("\n현재 계신 곳은 1층 안내데스크입니다.\n");
             }
         } else {
             Floor currentFloor = gameState.getGameFloors().get(gameState.getCurrentFloor() - 1);
+            floorLabel.setText("현재 층: " + currentFloor.getFloorNumber() + "층");
 
             if (currentFloor.getFloorNumber() == SPECIAL_TICKET_FLOOR) {
                 displayArea.append("\n--- " + currentFloor.getFloorNumber() + "층입니다. ---\n");
@@ -192,23 +219,21 @@ public class GameGUI extends JFrame {
             displayArea.append("함정: " + currentFloor.getTraps().get(0).getDescription() + "\n");
             displayArea.append("수수께끼: " + currentFloor.getTraps().get(0).getRiddle() + "\n");
 
-            // ⭐ 퀴즈를 표시한 후 타이머를 시작
-            startTimer();
+            startVisualTimer(); // ⭐ 1층이 아닐 때만 타이머 시작
         }
     }
 
     private void handleSubmit(ActionEvent e) {
-        // ⭐ 답변 제출 시 타이머 정지
-        if (gameTimer != null) {
-            gameTimer.stop();
+        if (visualTimer != null) {
+            visualTimer.stop();
         }
 
         String userAnswer = answerField.getText().trim();
         answerField.setText("");
 
         if (submitButton.getText().equals("시작")) {
-            submitButton.setText("정답 제출\n");
-            displayArea.append("\n층을 입력하고 '층 이동' 버튼을 누르세요.\n");
+            submitButton.setText("정답 제출");
+            displayArea.append("\n\n층을 입력하고 '층 이동' 버튼을 누르세요.\n");
             return;
         }
 
@@ -217,15 +242,7 @@ public class GameGUI extends JFrame {
             return;
         }
 
-        if (userAnswer.equalsIgnoreCase("리셋")) {
-            gameState.setAttemptsLeft(2);
-            if (gameState.getEliminatedPlayers().contains(gameState.getCurrentPlayerId())) {
-                gameState.getEliminatedPlayers().remove(gameState.getCurrentPlayerId());
-            }
-            displayArea.append("\n[관리자 모드] 남은 기회가 2회로 초기화되었고, 탈락자 명단에서 제외되었습니다.\n");
-            displayArea.append("층을 입력하고 '층 이동' 버튼을 누르세요.\n");
-            return;
-        }
+        // ⭐ handleSubmit()에서 타이머 시작 로직 제거
 
         Floor currentFloor = gameState.getGameFloors().get(gameState.getCurrentFloor() - 1);
         if (userAnswer.equalsIgnoreCase(currentFloor.getTraps().get(0).getAnswer())) {
@@ -238,16 +255,15 @@ public class GameGUI extends JFrame {
                 handleWin();
             }
         } else {
-            // ⭐ 오답 처리 로직을 별도 메서드로 분리
             handleWrongAnswer();
         }
     }
 
     private void handleFloorChange(ActionEvent e) {
-        // ⭐ 층 이동 버튼 클릭 시에도 타이머 정지
-        if (gameTimer != null) {
-            gameTimer.stop();
+        if (visualTimer != null) {
+            visualTimer.stop();
         }
+        timerLabel.setText("남은 시간: --초");
         try {
             int newFloor = Integer.parseInt(floorField.getText().trim());
             floorField.setText("");
@@ -263,7 +279,7 @@ public class GameGUI extends JFrame {
                 }
 
                 gameState.setCurrentFloor(newFloor);
-                displayArea.append("\n플레이어가 " + newFloor + "층으로 이동했습니다.\n");
+                displayArea.append("플레이어가 " + newFloor + "층으로 이동했습니다.\n");
 
                 promptForRiddle();
             }
@@ -273,11 +289,10 @@ public class GameGUI extends JFrame {
         }
     }
 
-    // ⭐ 시간 초과 또는 오답 시 호출되는 메서드
     private void handleWrongAnswer() {
         gameState.setAttemptsLeft(gameState.getAttemptsLeft() - 1);
         if (gameState.getAttemptsLeft() > 0) {
-            displayArea.append("\n틀렸습니다! 기회를 1회 잃고 1층으로 돌아갑니다. 남은 기회: " + gameState.getAttemptsLeft() + "\n");
+            displayArea.append("틀렸습니다! 기회를 1회 잃고 1층으로 돌아갑니다. 남은 기회: " + gameState.getAttemptsLeft() + "\n");
             gameState.setCurrentFloor(1);
             promptForRiddle();
         } else {
@@ -314,17 +329,16 @@ public class GameGUI extends JFrame {
                         "1.1 이 호텔은 총 30층으로 구성되어 있습니다.\n" +
                         "   - 1층: 안내 데스크\n" +
                         "   - 2~30층: 랜덤 퀴즈/이벤트 층\n" +
-                        "1.2 플레이어는 층 번호를 직접 입력하여 원하는 층으로 이동할 수 있습니다.\n" +
-                        "1.3 각 층은 20초의 시간제한이 있습니다.\n\n" +
-                        "2️ 클리어 및 탈락 조건\n" +
+                        "1.2 플레이어는 층 번호를 직접 입력하여 원하는 층으로 이동할 수 있습니다.\n\n" +
+                        "2 클리어 및 탈락 조건\n" +
                         "2.1 클리어 조건: 1층을 제외한 특정 층에서 퀴즈의 정답을 맞추면 클리어입니다.\n" +
                         "2.2 실패 시: 클리어 층이 아닌 곳에서 정답을 맞추면 1층 안내 데스크로 돌아갑니다.\n" +
                         "2.3 첫 탈출자 혜택: 제작자에게 연락하면 커피 쿠폰을 드립니다.\n\n" +
-                        "3️ 플레이어 기회\n" +
+                        "3 플레이어 기회\n" +
                         "3.1 모든 플레이어는 2번의 기본 기회를 가지고 있습니다.\n" +
                         "3.2 문제를 틀리면 1층 안내 데스크로 돌아가고 기회가 소진됩니다.\n" +
                         "3.3 필요 시 초대장(파일)을 받은 플레이어가 게임을 이어갈 수 있습니다.\n\n" +
-                        "4️ 메모 시스템\n" +
+                        "4⃣메모 시스템\n" +
                         "4.1 플레이어는 게임 클리어 또는 실패 후 메모를 남길 수 있습니다.\n" +
                         "4.2 메모는 들어온 순서대로 기록됩니다.\n" +
                         "4.3 메모의 내용은 자유로우며, 거짓말을 적어도 상관없습니다.\n" +
@@ -332,7 +346,8 @@ public class GameGUI extends JFrame {
                         "5 게임 진행\n" +
                         "5.1 게임을 클리어 해도 게임은 멈추지 않고 계속 진행됩니다.\n" +
                         "5.2 게임을 클러어 하지 못해도 게임은 멈추지 않고 계속 진행됩니다.\n" +
-                        "5.3 게임은 마지막에 초대장을 받은 사람이 다음 사람에게 전송하지 않으면 종료됩니다.\n"
+                        "5.3 게임은 마지막에 초대장을 받은 사람이 다음 사람에게 전송하지 않으면 종료됩니다.\n\n" +
+                        "게임을 시작하려면 아래의 '시작' 버튼을 눌러주세요."
         );
         rulesArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         rulesDialog.add(new JScrollPane(rulesArea));
@@ -369,6 +384,10 @@ public class GameGUI extends JFrame {
     }
 
     private void handleWin() {
+        if (visualTimer != null) {
+            visualTimer.stop();
+        }
+        timerLabel.setText("남은 시간: --초");
         String memo = JOptionPane.showInputDialog(this, "다음 플레이어를 위한 메모를 남겨주세요:");
 
         PlayerRecord newRecord = new PlayerRecord(gameState.getCurrentPlayerId(), FINAL_FLOOR, memo, "success");
@@ -387,22 +406,32 @@ public class GameGUI extends JFrame {
     }
 
     private void handleExit(ActionEvent e) {
+        if (visualTimer != null) {
+            visualTimer.stop();
+        }
+        timerLabel.setText("남은 시간: --초");
         saveGame();
         System.exit(0);
     }
 
-    // ⭐ 타이머 시작 메서드
-    private void startTimer() {
-        if (gameTimer != null && gameTimer.isRunning()) {
-            gameTimer.stop();
+    private void startVisualTimer() {
+        if (visualTimer != null) {
+            visualTimer.stop();
         }
-        gameTimer = new Timer(TIME_LIMIT, e -> {
-            SwingUtilities.invokeLater(() -> {
-                displayArea.append("\n시간 초과! 30초 안에 답을 맞히지 못했습니다.\n");
+        remainingTime = TIME_LIMIT;
+        timerLabel.setText("남은 시간: " + remainingTime + "초");
+
+        visualTimer = new Timer(1000, e -> {
+            remainingTime--;
+            timerLabel.setText("남은 시간: " + remainingTime + "초");
+
+            if (remainingTime <= 0) {
+                visualTimer.stop();
+                displayArea.append("\n시간 초과! " + TIME_LIMIT + "초 안에 답을 맞히지 못했습니다.\n");
                 handleWrongAnswer();
-            });
+            }
         });
-        gameTimer.setRepeats(false);
-        gameTimer.start();
+        visualTimer.setRepeats(true);
+        visualTimer.start();
     }
 }
