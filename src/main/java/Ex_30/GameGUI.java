@@ -346,8 +346,7 @@ public class GameGUI extends JFrame {
                         "5 게임 진행\n" +
                         "5.1 게임을 클리어 해도 게임은 멈추지 않고 계속 진행됩니다.\n" +
                         "5.2 게임을 클러어 하지 못해도 게임은 멈추지 않고 계속 진행됩니다.\n" +
-                        "5.3 게임은 마지막에 초대장을 받은 사람이 다음 사람에게 전송하지 않으면 종료됩니다.\n\n" +
-                        "게임을 시작하려면 아래의 '시작' 버튼을 눌러주세요."
+                        "5.3 게임은 마지막에 초대장을 받은 사람이 다음 사람에게 전송하지 않으면 종료됩니다.\n\n"
         );
         rulesArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         rulesDialog.add(new JScrollPane(rulesArea));
@@ -388,6 +387,12 @@ public class GameGUI extends JFrame {
             visualTimer.stop();
         }
         timerLabel.setText("남은 시간: --초");
+
+        // ⭐ 메시지를 먼저 출력
+        displayArea.append("\n축하합니다! 방 탈출에 성공했습니다. 메모가 기록되었습니다.\n");
+        displayArea.append("게임을 다시 시작하려면 창을 닫고 다시 실행해 주세요.\n");
+
+        // ⭐ 그 후에 메모를 입력받음
         String memo = JOptionPane.showInputDialog(this, "다음 플레이어를 위한 메모를 남겨주세요:");
 
         PlayerRecord newRecord = new PlayerRecord(gameState.getCurrentPlayerId(), FINAL_FLOOR, memo, "success");
@@ -395,9 +400,6 @@ public class GameGUI extends JFrame {
 
         gameState.getCompletedFloorsByPlayer().putIfAbsent(gameState.getCurrentPlayerId(), new HashSet<>());
         gameState.getCompletedFloorsByPlayer().get(gameState.getCurrentPlayerId()).add(gameState.getCurrentFloor());
-
-        displayArea.append("축하합니다! 방 탈출에 성공했습니다. 메모가 기록되었습니다.\n");
-        displayArea.append("게임을 다시 시작하려면 창을 닫고 다시 실행해 주세요.\n");
 
         saveGame();
 
