@@ -1,17 +1,17 @@
 Manifest-Version: 1.0
 Main-Class: Ex_30.GameMain
-Class-Path: junit-platform-launcher-1.10.0.jar junit-platform-engine-1.1
- 0.0.jar groovy-astbuilder-3.0.24.jar groovy-ant-3.0.24.jar gradle-core-
- 8.14.jar groovy-xml-3.0.24.jar gradle-kotlin-dsl-shared-runtime-8.14.ja
- r groovy-datetime-3.0.24.jar junit-jupiter-api-5.10.0.jar gradle-api-8.
- 14.jar gradle-installation-beacon-8.14.jar gradle-kotlin-dsl-tooling-mo
- dels-8.14.jar groovy-console-3.0.24.jar groovy-sql-3.0.24.jar kotlin-st
- dlib-2.0.21.jar javaparser-core-3.17.0.jar junit-jupiter-engine-5.10.0.
- jar junit-jupiter-5.10.0.jar junit-jupiter-params-5.10.0.jar groovy-jso
- n-3.0.24.jar junit-platform-commons-1.10.0.jar gradle-kotlin-dsl-extens
- ions-8.14.jar gradle-kotlin-dsl-8.14.jar groovy-nio-3.0.24.jar kotlin-r
- eflect-2.0.21.jar groovy-dateutil-3.0.24.jar groovy-test-3.0.24.jar gro
- ovy-3.0.24.jar gradle-core-kotlin-extensions-8.14.jar opentest4j-1.3.0.
- jar gradle-core-api-8.14.jar groovy-groovydoc-3.0.24.jar groovy-templat
- es-3.0.24.jar gson-2.10.1.jar
+Class-Path: opentest4j-1.3.0.jar groovy-nio-3.0.24.jar junit-platform-en
+ gine-1.10.0.jar groovy-datetime-3.0.24.jar groovy-ant-3.0.24.jar junit-
+ jupiter-api-5.10.0.jar gradle-kotlin-dsl-tooling-models-8.14.jar groovy
+ -test-3.0.24.jar groovy-console-3.0.24.jar kotlin-stdlib-2.0.21.jar jun
+ it-jupiter-params-5.10.0.jar junit-jupiter-engine-5.10.0.jar groovy-dat
+ eutil-3.0.24.jar kotlin-reflect-2.0.21.jar gradle-kotlin-dsl-shared-run
+ time-8.14.jar groovy-astbuilder-3.0.24.jar gradle-core-api-8.14.jar gra
+ dle-core-kotlin-extensions-8.14.jar gradle-core-8.14.jar junit-platform
+ -launcher-1.10.0.jar gradle-installation-beacon-8.14.jar junit-jupiter-
+ 5.10.0.jar groovy-xml-3.0.24.jar junit-platform-commons-1.10.0.jar grad
+ le-kotlin-dsl-extensions-8.14.jar javaparser-core-3.17.0.jar gradle-kot
+ lin-dsl-8.14.jar groovy-json-3.0.24.jar groovy-groovydoc-3.0.24.jar gro
+ ovy-templates-3.0.24.jar gradle-api-8.14.jar groovy-3.0.24.jar groovy-s
+ ql-3.0.24.jar gson-2.10.1.jar
 
