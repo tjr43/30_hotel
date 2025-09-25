@@ -49,17 +49,17 @@
     <br>
 
     <form action="GameServlet" method="post">
-        <input type="hidden" name="action" value="submitAnswer">
-        정답: <input type="text" name="answer" required>
-        <button type="submit">정답 제출</button>
+        <input type="hidden" name="action" value="changeFloor">
+        층 이동: <input type="text" name="newFloor" required>
+        <button type="submit">층 이동</button>
     </form>
 
     <br>
 
     <form action="GameServlet" method="post">
-        <input type="hidden" name="action" value="changeFloor">
-        층 이동: <input type="text" name="newFloor" required>
-        <button type="submit">층 이동</button>
+        <input type="hidden" name="action" value="submitAnswer">
+        정답: <input type="text" name="answer" required>
+        <button type="submit">정답 제출</button>
     </form>
 
     <br>
