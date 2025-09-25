@@ -36,7 +36,6 @@
             if (currentFloor == 1) {
                 out.println("<p>--- 호텔에 오신 것을 환영합니다! ---</p>");
                 out.println("<p>현재 계신 곳은 1층 안내데스크입니다. 아래의 '규칙'을 눌러 규칙을 확인해 주세요.</p>");
-                out.println("<p>게임을 시작하려면 아래의 \"시작\" 버튼을 눌러주세요.</p>");
             } else {
                 List<Floor> gameFloors = gameState.getGameFloors();
                 Floor floor = gameFloors.get(currentFloor - 1);

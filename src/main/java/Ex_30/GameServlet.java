@@ -123,14 +123,11 @@ public class GameServlet extends HttpServlet {
     }
 
     private void handleGameOver(HttpServletRequest request, HttpServletResponse response, GameState gameState) throws IOException, ServletException {
-        // You would redirect to a new JSP page to handle the memo input here.
-        // For this example, let's just show a simple alert and redirect.
-        response.getWriter().println("<script>alert('게임 오버! 메모를 남겨주세요.'); window.location.href='gameover.jsp';</script>");
+        request.getRequestDispatcher("gameover.jsp").forward(request, response);
     }
 
     private void handleWin(HttpServletRequest request, HttpServletResponse response, GameState gameState) throws IOException, ServletException {
-        // You would redirect to a new JSP page to handle the memo input here.
-        response.getWriter().println("<script>alert('축하합니다! 방 탈출 성공! 메모를 남겨주세요.'); window.location.href='win.jsp';</script>");
+        request.getRequestDispatcher("win.jsp").forward(request, response);
     }
 
     private void handleExit(HttpServletRequest request, HttpServletResponse response, GameState gameState) throws IOException {
