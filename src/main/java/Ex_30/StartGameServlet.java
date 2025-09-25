@@ -19,6 +19,7 @@ public class StartGameServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String playerName = request.getParameter("playerName").trim();
         HttpSession session = request.getSession();
+        request.setCharacterEncoding("UTF-8");
 
         GameState gameState = loadGame();
 

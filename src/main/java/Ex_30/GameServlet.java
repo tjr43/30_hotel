@@ -26,6 +26,7 @@ public class GameServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         GameState gameState = (GameState) session.getAttribute("gameState");
+        request.setCharacterEncoding("UTF-8");
 
         if (gameState == null) {
             response.sendRedirect("start.jsp");

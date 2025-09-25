@@ -1,152 +1,88 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="Ex_30.GameState" %>
+<%@ page import="Ex_30.Floor" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.HashSet" %>
+
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>호텔 방탈출 게임</title>
+    <title>호텔 면목</title>
     <style>
-        body {
-            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-            background-color: #333;
-            color: #eee;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .container {
-            width: 800px;
-            background-color: #444;
-            border: 2px solid #555;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 24px;
-            color: #fff;
-            margin: 0;
-        }
-        .timer-label {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffcc00;
-        }
-        .display-area {
-            width: 100%;
-            height: 300px;
-            background-color: #222;
-            color: #eee;
-            border: 1px solid #666;
-            padding: 10px;
-            box-sizing: border-box;
-            resize: none;
-            overflow-y: scroll;
-            margin-bottom: 20px;
-        }
-        .input-group {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        .input-group label {
-            width: 120px;
-            text-align: right;
-            padding-right: 10px;
-            line-height: 30px;
-        }
-        .input-group input[type="text"] {
-            flex-grow: 1;
-            padding: 5px;
-            font-size: 16px;
-            border: 1px solid #666;
-            background-color: #555;
-            color: #fff;
-        }
-        .buttons-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .buttons-group button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            background-color: #6a05ad;
-            color: white;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .buttons-group button:hover {
-            background-color: #58048e;
-        }
-        .info-buttons button {
-            background-color: #17a2b8;
-        }
-        .info-buttons button:hover {
-            background-color: #117a8b;
-        }
-        .exit-button {
-            background-color: #dc3545 !important;
-        }
-        .exit-button:hover {
-            background-color: #c82333 !important;
-        }
+        body { font-family: sans-serif; text-align: center; }
+        .container { width: 80%; margin: 0 auto; }
+        .display-area { border: 1px solid black; height: 300px; overflow-y: scroll; padding: 10px; text-align: left; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="timer-label">남은 시간: <span id="timer">--</span>초</div>
-            <h1>현재 층: 1층</h1>
-            <div class="player-info">플레이어: ID01</div>
+        <h1>호텔 면목</h1>
+
+        <%
+            // 세션에서 게임 상태 가져오기
+            GameState gameState = (GameState) session.getAttribute("gameState");
+            if (gameState == null) {
+                response.sendRedirect("start.jsp");
+                return;
+            }
+
+            int currentFloor = gameState.getCurrentFloor();
+            String currentPlayerId = gameState.getCurrentPlayerId();
+            int attemptsLeft = gameState.getAttemptsLeft();
+        %>
+
+        <p>현재 플레이어: <%= currentPlayerId %></p>
+        <p>현재 층: <%= currentFloor %></p>
+        <p>남은 기회: <%= attemptsLeft %></p>
+
+        <div class="display-area">
+            <%
+                // 층 이동 또는 정답 제출 후 메시지 표시
+                if (request.getAttribute("message") != null) {
+                    out.println("<p>" + request.getAttribute("message") + "</p>");
+                }
+
+                // GameGUI.java의 promptForRiddle() 로직을 JSP에 구현
+                if (currentFloor == 1) {
+                    out.println("<p>--- 호텔에 오신 것을 환영합니다! ---</p>");
+                    out.println("<p>현재 계신 곳은 1층 안내데스크입니다. 아래의 '규칙'을 눌러 규칙을 확인해 주세요.</p>");
+                    out.println("<p>게임을 시작하려면 아래의 \"시작\" 버튼을 눌러주세요.</p>");
+                } else {
+                    List<Floor> gameFloors = gameState.getGameFloors();
+                    Floor floor = gameFloors.get(currentFloor - 1);
+                    out.println("<p>--- " + floor.getFloorNumber() + "층입니다. ---</p>");
+                    out.println("<p>함정: " + floor.getTraps().get(0).getDescription() + "</p>");
+                    out.println("<p>수수께끼: " + floor.getTraps().get(0).getRiddle() + "</p>");
+                }
+            %>
         </div>
 
-        <textarea class="display-area" readonly></textarea>
+        <br>
 
-        <form action="GameServlet" method="POST">
-            <div class="input-group">
-                <label for="answer-field">정답 입력:</label>
-                <input type="text" id="answer-field" name="answer" placeholder="정답을 입력하세요">
-            </div>
-            <div class="input-group">
-                <label for="floor-field">층 이동:</label>
-                <input type="text" id="floor-field" name="floor" placeholder="이동할 층을 입력하세요">
-            </div>
-
-            <div class="buttons-group">
-                <button type="submit" name="action" value="submitAnswer">정답 제출</button>
-                <button type="submit" name="action" value="goFloor">층 이동</button>
-            </div>
+        <form action="GameServlet" method="post">
+            <input type="hidden" name="action" value="submitAnswer">
+            정답: <input type="text" name="answer" required>
+            <button type="submit">정답 제출</button>
         </form>
 
-        <div class="buttons-group info-buttons">
-            <button id="show-memos">메모 보기</button>
-            <button id="show-rules">규칙 보기</button>
-            <button class="exit-button">게임 종료</button>
-        </div>
-    </div>
+        <br>
 
-    <script>
-        document.getElementById('show-memos').addEventListener('click', function() {
-            // 메모 보기 기능 구현
-            alert('메모를 보여주는 기능은 아직 구현되지 않았습니다.');
-        });
-        document.getElementById('show-rules').addEventListener('click', function() {
-            // 규칙 보기 기능 구현
-            alert('규칙을 보여주는 기능은 아직 구현되지 않았습니다.');
-        });
-        document.getElementById('exit-button').addEventListener('click', function() {
-            // 게임 종료 기능 구현
-            alert('게임 종료 기능은 아직 구현되지 않았습니다.');
-        });
-    </script>
+        <form action="GameServlet" method="post">
+            <input type="hidden" name="action" value="changeFloor">
+            층 이동: <input type="text" name="newFloor" required>
+            <button type="submit">층 이동</button>
+        </form>
+
+        <br>
+
+        <button onclick="window.location.href='memos.jsp'">메모 보기</button>
+        <button onclick="window.location.href='rules.jsp'">규칙 보기</button>
+        <form action="GameServlet" method="post" style="display:inline;">
+            <input type="hidden" name="action" value="exitGame">
+            <button type="submit">게임 종료</button>
+        </form>
+    </div>
 </body>
 </html>
