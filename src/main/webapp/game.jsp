@@ -1,9 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="Ex_30.GameState" %>
 <%@ page import="Ex_30.Floor" %>
+<%@ page import="Ex_30.HtmlEscaper" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.HashSet" %>
+<%@ include file="check_session.jsp" %>
+<%
+    int currentFloor = gameState.getCurrentFloor();
+    String currentPlayerId = gameState.getCurrentPlayerId();
+    int attemptsLeft = gameState.getAttemptsLeft();
+%>
 
 <!DOCTYPE html>
 <html>
@@ -13,25 +17,15 @@
 </head>
 <body>
     <h1>호텔 면목</h1>
-    <%
-        GameState gameState = (GameState) session.getAttribute("gameState");
-        if (gameState == null) {
-            response.sendRedirect("start.jsp");
-            return;
-        }
-        int currentFloor = gameState.getCurrentFloor();
-        String currentPlayerId = gameState.getCurrentPlayerId();
-        int attemptsLeft = gameState.getAttemptsLeft();
-    %>
 
-    <p>현재 플레이어: <%= currentPlayerId %></p>
+    <p>현재 플레이어: <%= HtmlEscaper.escape(currentPlayerId) %></p>
     <p>현재 층: <%= currentFloor %></p>
     <p>남은 기회: <%= attemptsLeft %></p>
 
     <div style="border: 1px solid black; padding: 10px; min-height: 200px; text-align: left;">
         <%
             if (request.getAttribute("message") != null) {
-                out.println("<p>" + request.getAttribute("message") + "</p>");
+                out.println("<p>" + HtmlEscaper.escape((String)request.getAttribute("message")) + "</p>");
             }
             if (currentFloor == 1) {
                 out.println("<p>--- 호텔에 오신 것을 환영합니다! ---</p>");
@@ -40,8 +34,8 @@
                 List<Floor> gameFloors = gameState.getGameFloors();
                 Floor floor = gameFloors.get(currentFloor - 1);
                 out.println("<p>--- " + floor.getFloorNumber() + "층입니다. ---</p>");
-                out.println("<p>함정: " + floor.getTraps().get(0).getDescription() + "</p>");
-                out.println("<p>수수께끼: " + floor.getTraps().get(0).getRiddle() + "</p>");
+                out.println("<p>함정: " + HtmlEscaper.escape(floor.getTraps().get(0).getDescription()) + "</p>");
+                out.println("<p>수수께끼: " + HtmlEscaper.escape(floor.getTraps().get(0).getRiddle()) + "</p>");
             }
         %>
     </div>

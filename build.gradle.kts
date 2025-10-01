@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("war")
+    id("org.gretty") version "4.1.3" // 이 라인을 추가하세요
 }
 
 group = "org.example"
