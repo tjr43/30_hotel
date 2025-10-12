@@ -1,4 +1,4 @@
-package Ex_30;
+package Ex_mmhotel;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +14,8 @@ import java.io.IOException;
 
 @WebServlet("/SaveMemoServlet")
 public class SaveMemoServlet extends HttpServlet {
+    // 데이터 저장 경로를 외부 경로로 변경
+    private static final String SAVE_DIRECTORY = "C:/hotel_game_data/";
     private static final String FILE_NAME = "invitation.json";
     private static final int FINAL_FLOOR = 22;
 
@@ -41,8 +43,14 @@ public class SaveMemoServlet extends HttpServlet {
     }
 
     private void saveGame(GameState gameState) {
+        // 저장 디렉토리가 없으면 생성
+        File directory = new File(SAVE_DIRECTORY);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (FileWriter writer = new FileWriter(getServletContext().getRealPath("/") + FILE_NAME)) {
+        try (FileWriter writer = new FileWriter(SAVE_DIRECTORY + FILE_NAME)) {
             gson.toJson(gameState, writer);
         } catch (IOException e) {
             e.printStackTrace();

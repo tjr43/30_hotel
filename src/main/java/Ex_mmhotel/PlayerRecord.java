@@ -1,4 +1,4 @@
-package Ex_30;
+package Ex_mmhotel;
 //플레이어의 기록(메모)
 public class PlayerRecord {
     private String playerId;

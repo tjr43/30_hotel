@@ -1,12 +1,11 @@
-package Ex_30;
+package Ex_mmhotel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.HashSet;
-import java.util.Set;
+
 //게임 처음 시작시 초기 데이터 생성
 public class GameDataInitializer {
     private static final List<Trap> ALL_TRAPS = Arrays.asList(

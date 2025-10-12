@@ -1,4 +1,4 @@
-package Ex_30;
+package Ex_mmhotel;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +14,8 @@ import java.io.IOException;
 
 @WebServlet("/StartGameServlet")
 public class StartGameServlet extends HttpServlet {
+    // 데이터 저장 경로를 외부 경로로 변경
+    private static final String SAVE_DIRECTORY = "C:/hotel_game_data/";
     private static final String FILE_NAME = "invitation.json";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -39,7 +41,13 @@ public class StartGameServlet extends HttpServlet {
     }
 
     private GameState loadGame() {
-        String filePath = getServletContext().getRealPath("/") + FILE_NAME;
+        // 저장 디렉토리가 없으면 생성
+        File directory = new File(SAVE_DIRECTORY);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        String filePath = SAVE_DIRECTORY + FILE_NAME;
         File file = new File(filePath);
         Gson gson = new Gson();
         if (file.exists() && file.length() > 0) {

@@ -1,4 +1,4 @@
-package Ex_30;
+package Ex_mmhotel;
 //퀴즈에 대한 정보 담기
 public class Trap {
     private String description; //함정의 종류나 특징

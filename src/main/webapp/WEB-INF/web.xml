@@ -6,7 +6,7 @@
 
     <filter>
         <filter-name>EncodingFilter</filter-name>
-        <filter-class>Ex_30.EncodingFilter</filter-class>
+        <filter-class>Ex_mmhotel.EncodingFilter</filter-class>
     </filter>
 
     <filter-mapping>

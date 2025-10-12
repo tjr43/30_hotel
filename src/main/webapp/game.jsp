@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="Ex_30.Floor" %>
-<%@ page import="Ex_30.HtmlEscaper" %>
+<%@ page import="Ex_mmhotel.Floor" %>
+<%@ page import="Ex_mmhotel.HtmlEscaper" %>
 <%@ page import="java.util.List" %>
 <%@ include file="check_session.jsp" %>
 <%

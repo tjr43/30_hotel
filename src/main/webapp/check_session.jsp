@@ -1,4 +1,4 @@
-<%@ page import="Ex_30.GameState" %>
+<%@ page import="Ex_mmhotel.GameState" %>
 <%
     GameState gameState = (GameState) session.getAttribute("gameState");
     if (gameState == null) {

@@ -1,4 +1,4 @@
-package Ex_30;
+package Ex_mmhotel;
 
 import java.util.List;
 //각 층에 대한 정보 담기
