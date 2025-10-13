@@ -1,68 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="Ex_mmhotel.Floor" %>
 <%@ page import="Ex_mmhotel.HtmlEscaper" %>
-<%@ page import="java.util.List" %>
-<%@ include file="check_session.jsp" %>
-<%
-    int currentFloor = gameState.getCurrentFloor();
-    String currentPlayerId = gameState.getCurrentPlayerId();
-    int attemptsLeft = gameState.getAttemptsLeft();
-%>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>호텔 면목</title>
+    <title>실패</title>
 </head>
 <body>
-    <h1>호텔 면목</h1>
-
-    <p>현재 플레이어: <%= HtmlEscaper.escape(currentPlayerId) %></p>
-    <p>현재 층: <%= currentFloor %></p>
-    <p>남은 기회: <%= attemptsLeft %></p>
-
-    <div style="border: 1px solid black; padding: 10px; min-height: 200px; text-align: left;">
-        <%
-            if (request.getAttribute("message") != null) {
-                out.println("<p>" + HtmlEscaper.escape((String)request.getAttribute("message")) + "</p>");
-            }
-            if (currentFloor == 1) {
-                out.println("<p>--- 호텔에 오신 것을 환영합니다! ---</p>");
-                out.println("<p>현재 계신 곳은 1층 안내데스크입니다. 아래의 '규칙'을 눌러 규칙을 확인해 주세요.</p>");
-            } else {
-                List<Floor> gameFloors = gameState.getGameFloors();
-                Floor floor = gameFloors.get(currentFloor - 1);
-                out.println("<p>--- " + floor.getFloorNumber() + "층입니다. ---</p>");
-                out.println("<p>함정: " + HtmlEscaper.escape(floor.getTraps().get(0).getDescription()) + "</p>");
-                out.println("<p>수수께끼: " + HtmlEscaper.escape(floor.getTraps().get(0).getRiddle()) + "</p>");
-            }
-        %>
-    </div>
-
-    <br>
-
-    <form action="GameServlet" method="post">
-        <input type="hidden" name="action" value="changeFloor">
-        층 이동: <input type="text" name="newFloor" required>
-        <button type="submit">층 이동</button>
-    </form>
-
-    <br>
-
-    <form action="GameServlet" method="post">
-        <input type="hidden" name="action" value="submitAnswer">
-        정답: <input type="text" name="answer" required>
-        <button type="submit">정답 제출</button>
-    </form>
-
-    <br>
-
-    <button onclick="window.location.href='memos.jsp'">메모 보기</button>
-    <button onclick="window.location.href='rules.jsp'">규칙 보기</button>
-    <form action="GameServlet" method="post" style="display:inline;">
-        <input type="hidden" name="action" value="exitGame">
-        <button type="submit">게임 종료</button>
+    <h1>게임 오버!</h1>
+    <p>
+        <%-- 서블릿에서 전달된 동적 게임오버 메시지를 표시합니다. --%>
+        <% if (request.getAttribute("message") != null) { %>
+            <%= HtmlEscaper.escape((String)request.getAttribute("message")) %>
+            <br>
+        <% } %>
+        다음 플레이어를 위한 메모를 남겨주세요.
+    </p>
+    <form action="SaveMemoServlet" method="post">
+        <input type="hidden" name="status" value="fail">
+        <textarea name="memo" rows="4" cols="50" placeholder="메모를 입력하세요"></textarea>
+        <br><br>
+        <button type="submit">메모 저장</button>
     </form>
 </body>
 </html>
