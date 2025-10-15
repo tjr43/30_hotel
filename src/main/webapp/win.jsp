@@ -3,16 +3,23 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>게임 승리</title>
+    <title>호텔 면목 - 탈출 성공</title>
+    <!-- 게임오버, 체크아웃 페이지와 동일한 스타일을 적용합니다. -->
+    <link rel="stylesheet" href="css/page_style.css">
 </head>
-<body>
-    <h1>탈출 성공!</h1>
-    <p>축하합니다! 다음 플레이어를 위한 메모를 남겨주세요.</p>
-    <form action="SaveMemoServlet" method="post">
-        <input type="hidden" name="status" value="success">
-        <textarea name="memo" rows="4" cols="50" placeholder="메모를 입력하세요"></textarea>
-        <br><br>
-        <button type="submit">메모 저장</button>
-    </form>
+<!-- body에 end-screen 클래스를 추가하여 Endingdoor.jpg 배경을 적용합니다. -->
+<body class="end-screen">
+    <div class="container">
+        <h1>탈출 성공!</h1>
+        <p>축하합니다! 당신은 이 기묘한 호텔에서 무사히 빠져나왔습니다.<br>다음에 찾아올 손님을 위해 기록을 남겨주시겠습니까?</p>
+
+        <form action="SaveMemoServlet" method="post">
+            <input type="hidden" name="status" value="success">
+            <textarea name="memo" rows="4" cols="50" placeholder="이곳에 기록을 남기세요..."></textarea>
+            <div class="button-group">
+                <button type="submit">기록 남기기</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

@@ -6,6 +6,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.Collections" %>
 <%
+    // --- 페이지의 모든 로직을 이 한 곳에서 처리합니다. ---
     GameState gameState = (GameState) session.getAttribute("gameState");
     if (gameState == null) {
         response.sendRedirect("start.jsp");
@@ -23,6 +24,10 @@
     if(isFirstVisit) {
         session.setAttribute("isFirstVisit", false);
     }
+
+    // 함정 메시지나 1층 복귀 사운드 신호를 받습니다.
+    String trapMessage = (String) request.getAttribute("trapMessage");
+    Boolean playReturnSound = (Boolean) request.getAttribute("playReturnSound");
 %>
 
 <!DOCTYPE html>
@@ -32,13 +37,18 @@
     <title>호텔 면목</title>
     <link rel="stylesheet" href="css/hotel_style.css">
 </head>
-<body class="<%= currentFloor == 1 ? "floor-1" : "" %>">
+<!-- 1층일 경우와 함정 메시지가 있을 경우 body에 다른 클래스를 부여합니다. -->
+<body class="<%= (trapMessage != null) ? "trap-active" : (currentFloor == 1 ? "floor-1" : "") %>">
 
     <div class="elevator-overlay" id="elevatorOverlay">
         <div class="elevator-indicator"></div>
         <p id="overlayMessage">Moving...</p>
     </div>
 
+    <%
+        // ★★★ 버그 수정: return; 대신, 함정 메시지가 있을 때는 게임 컨테이너를 아예 그리지 않는 방식으로 변경 ★★★
+        if (trapMessage == null) {
+    %>
     <div class="container">
         <h1>Hotel Myunmok</h1>
 
@@ -91,14 +101,15 @@
         <div class="button-group">
             <button onclick="window.location.href='memos.jsp'">메모 보기</button>
             <button onclick="window.location.href='rules.jsp'">규칙 보기</button>
-            <!-- ▼▼▼ 체크아웃 버튼을 form으로 감싸서 제출하도록 수정했습니다. ▼▼▼ -->
             <form action="GameServlet" method="post" style="display:inline;">
                 <input type="hidden" name="action" value="exitGame">
                 <button type="submit">체크아웃</button>
             </form>
-            <!-- ▲▲▲ 수정 종료 ▲▲▲ -->
         </div>
     </div>
+    <%
+        } // if (trapMessage == null) 의 끝
+    %>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script>
@@ -119,14 +130,17 @@
             }, 2500);
         }
 
-        document.getElementById('floorChangeForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            playElevatorEffect(() => this.submit());
-        });
+        const floorChangeForm = document.getElementById('floorChangeForm');
+        if(floorChangeForm) {
+            floorChangeForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                playElevatorEffect(() => this.submit());
+            });
+        }
 
+        // 페이지 로드 시 즉시 실행
         (function() {
             <%
-                String trapMessage = (String) request.getAttribute("trapMessage");
                 if (trapMessage != null) {
             %>
                 const overlay = document.getElementById('elevatorOverlay');
@@ -138,13 +152,8 @@
                 setTimeout(function() {
                     window.location.href = 'gameover.jsp';
                 }, 3000);
-
             <%
-                return;
-                }
-
-                Boolean playReturnSound = (Boolean) request.getAttribute("playReturnSound");
-                if (playReturnSound != null && playReturnSound) {
+                } else if (playReturnSound != null && playReturnSound) {
             %>
                  playElevatorEffect(() => {
                      document.getElementById('elevatorOverlay').classList.remove('show');

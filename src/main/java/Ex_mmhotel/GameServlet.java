@@ -22,7 +22,6 @@ public class GameServlet extends HttpServlet {
     private static final String SAVE_DIRECTORY = System.getProperty("user.home") + File.separator + ".hotel_game_data";
     private static final String FILE_NAME = "invitation.json";
     private static final int FINAL_FLOOR = 22;
-    private static final int SPECIAL_TICKET_FLOOR = 7;
     private static final int INSTANT_DEFEAT_FLOOR = 17;
 
     @Override
@@ -56,11 +55,9 @@ public class GameServlet extends HttpServlet {
                 case "changeFloor":
                     handleFloorChange(request, response, gameState);
                     break;
-                // ▼▼▼ 빠져있던 체크아웃(게임 종료) 로직을 다시 추가했습니다. ▼▼▼
                 case "exitGame":
                     handleExit(request, response, gameState);
                     break;
-                // ▲▲▲ 로직 추가 종료 ▲▲▲
             }
         }
     }
@@ -87,11 +84,14 @@ public class GameServlet extends HttpServlet {
         try {
             int newFloor = Integer.parseInt(request.getParameter("newFloor").trim());
 
+            // ▼▼▼ 수정된 부분: 30층까지 이동할 수 있도록 범위를 명확하게 설정합니다. ▼▼▼
             if (newFloor < 1 || newFloor > 30) {
+                // 오류 메시지도 30층 기준으로 고정합니다.
                 request.setAttribute("message", "유효하지 않은 층입니다. 1층부터 30층 사이의 번호를 입력해주세요.");
                 request.getRequestDispatcher("game.jsp").forward(request, response);
                 return;
             }
+            // ▲▲▲ 수정 종료 ▲▲▲
 
             Set<Integer> completedFloors = gameState.getCompletedFloorsByPlayer().getOrDefault(gameState.getCurrentPlayerId(), new HashSet<>());
             if (completedFloors.contains(newFloor)) {
@@ -103,11 +103,10 @@ public class GameServlet extends HttpServlet {
             gameState.setCurrentFloor(newFloor);
 
             if (newFloor == INSTANT_DEFEAT_FLOOR) {
-                request.setAttribute("trapMessage", "함정에 걸려 즉시 탈락합니다!");
+                request.setAttribute("trapMessage", "17층에 들어서자 불길한 기운이 당신을 덮칩니다...");
                 request.getRequestDispatcher("game.jsp").forward(request, response);
                 return;
             }
-
 
             request.getRequestDispatcher("game.jsp").forward(request, response);
 
@@ -153,7 +152,6 @@ public class GameServlet extends HttpServlet {
         request.getRequestDispatcher("win.jsp").forward(request, response);
     }
 
-    // ▼▼▼ 빠져있던 handleExit과 saveGame 메소드를 다시 추가했습니다. ▼▼▼
     private void handleExit(HttpServletRequest request, HttpServletResponse response, GameState gameState) throws IOException {
         saveGame(gameState);
         HttpSession session = request.getSession(false);
@@ -172,6 +170,5 @@ public class GameServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-    // ▲▲▲ 메소드 추가 종료 ▲▲▲
 }
 

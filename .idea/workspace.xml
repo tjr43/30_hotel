@@ -6,6 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="7bd66565-0fbb-4f5e-a368-6166e696fdce" name="Changes" comment="수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameDataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameDataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/game.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/game.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/win.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/win.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +165,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760537150052</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="수정">
+      <option name="closed" value="true" />
+      <created>1760538160874</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1760538160874</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
