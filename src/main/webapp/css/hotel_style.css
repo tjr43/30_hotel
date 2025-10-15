@@ -14,20 +14,31 @@
 <head>
     <meta charset="UTF-8">
     <title>호텔 면목</title>
+    <!-- CSS 파일을 연결합니다. -->
     <link rel="stylesheet" href="css/hotel_style.css">
 </head>
 <body>
+    <!-- 전체 레이아웃을 감싸는 컨테이너 -->
     <div class="container">
+
+        <!-- 왼쪽 정보 컬럼 -->
         <div class="left-column">
-            <img src="images/statue.jpg" class="decorative-image" alt="호텔의 석상">
+            <!-- 호텔 테마에 맞는 장식용 이미지 추가 -->
+            <img src="https://images.unsplash.com/photo-1587588939839-388ed1945e69?q=80&w=1887&auto=format&fit=crop" class="decorative-image" alt="호텔의 석상">
+
+            <!-- 게임 정보 -->
             <div class="game-info">
                 <p><strong>GUEST:</strong><br><%= HtmlEscaper.escape(currentPlayerId) %></p>
                 <p><strong>CURRENT FLOOR:</strong><br><%= currentFloor %></p>
                 <p><strong>KEYS LEFT:</strong><br><%= attemptsLeft %></p>
             </div>
         </div>
+
+        <!-- 오른쪽 메인 컬럼 -->
         <div class="right-column">
             <h1>Hotel Myunmok</h1>
+
+            <!-- 퀴즈 영역 -->
             <div class="quiz-box">
                 <%
                     if (request.getAttribute("message") != null) {
@@ -45,6 +56,8 @@
                     }
                 %>
             </div>
+
+            <!-- 입력 폼 그룹 -->
             <form action="GameServlet" method="post" class="form-group">
                 <input type="hidden" name="action" value="changeFloor">
                 <label for="newFloorInput">층 이동:</label>
@@ -57,6 +70,8 @@
                 <input type="text" id="answerInput" name="answer" placeholder="정답 입력..." required>
                 <button type="submit">제출</button>
             </form>
+
+            <!-- 하단 버튼 그룹 -->
             <div class="button-group">
                 <button onclick="window.location.href='memos.jsp'">메모 보기</button>
                 <button onclick="window.location.href='rules.jsp'">규칙 보기</button>
