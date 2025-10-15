@@ -1,87 +1,147 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="Ex_mmhotel.Floor" %>
-<%@ page import="Ex_mmhotel.HtmlEscaper" %>
-<%@ page import="java.util.List" %>
-<%@ include file="check_session.jsp" %>
-<%
-    int currentFloor = gameState.getCurrentFloor();
-    String currentPlayerId = gameState.getCurrentPlayerId();
-    int attemptsLeft = gameState.getAttemptsLeft();
-%>
+/* 외부 구글 폰트 불러오기: 제목용(Cinzel)과 내용용(Noto Sans KR) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>호텔 면목</title>
-    <!-- CSS 파일을 연결합니다. -->
-    <link rel="stylesheet" href="css/hotel_style.css">
-</head>
-<body>
-    <!-- 전체 레이아웃을 감싸는 컨테이너 -->
-    <div class="container">
+/* --- 전체 페이지의 기본 스타일 --- */
+body {
+    /* 배경 이미지 설정 (경로 수정!) */
+    /* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+    background-image: url('../images/background.jpg'); /* ../ 를 추가하여 올바른 경로로 수정 */
+    /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+    background-size: cover; /* 이미지가 화면에 꽉 차도록 설정 */
+    background-position: center; /* 이미지를 중앙에 위치 */
+    background-attachment: fixed; /* 스크롤해도 배경은 고정 */
 
-        <!-- 왼쪽 정보 컬럼 -->
-        <div class="left-column">
-            <!-- 호텔 테마에 맞는 장식용 이미지 추가 -->
-            <img src="https://images.unsplash.com/photo-1587588939839-388ed1945e69?q=80&w=1887&auto=format&fit=crop" class="decorative-image" alt="호텔의 석상">
+    /* 기본 글꼴 및 색상 설정 */
+    font-family: 'Noto Sans KR', sans-serif; /* 기본 글꼴은 Noto Sans KR */
+    color: #e0e0e0; /* 기본 글자색은 밝은 회색 */
+    margin: 0;
+    display: flex; /* 요소들을 중앙에 배치하기 위한 설정 */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* 최소 높이를 화면 전체 높이로 설정 */
+}
 
-            <!-- 게임 정보 -->
-            <div class="game-info">
-                <p><strong>GUEST:</strong><br><%= HtmlEscaper.escape(currentPlayerId) %></p>
-                <p><strong>CURRENT FLOOR:</strong><br><%= currentFloor %></p>
-                <p><strong>KEYS LEFT:</strong><br><%= attemptsLeft %></p>
-            </div>
-        </div>
+/* --- 메인 레이아웃 (좌우 2단) --- */
+.container {
+    display: flex; /* 내부 요소(왼쪽, 오른쪽 컬럼)를 가로로 배치 */
+    width: 90%;
+    max-width: 1200px;
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명한 검은색 배경 */
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid #c0a172; /* 금색 테두리 */
+}
 
-        <!-- 오른쪽 메인 컬럼 -->
-        <div class="right-column">
-            <h1>Hotel Myunmok</h1>
+/* 왼쪽 컬럼: 석상 이미지와 게임 정보 */
+.left-column {
+    flex: 1; /* 왼쪽 컬럼이 차지하는 비율 */
+    padding: 30px;
+    text-align: center;
+}
 
-            <!-- 퀴즈 영역 -->
-            <div class="quiz-box">
-                <%
-                    if (request.getAttribute("message") != null) {
-                        out.println("<p><strong>[안내데스크]</strong> " + HtmlEscaper.escape((String)request.getAttribute("message")) + "</p>");
-                    }
-                    if (currentFloor == 1) {
-                        out.println("<p>호텔 면목의 로비에 오신 것을 환영합니다.</p>");
-                        out.println("<p>이곳에서는 기묘한 일들이 벌어지곤 합니다... 부디, 조심하십시오.</p>");
-                    } else {
-                        List<Floor> gameFloors = gameState.getGameFloors();
-                        Floor floor = gameFloors.get(currentFloor - 1);
-                        out.println("<p><strong>[" + floor.getFloorNumber() + "호실]</strong></p>");
-                        out.println("<p><i>" + HtmlEscaper.escape(floor.getTraps().get(0).getDescription()) + "</i></p>");
-                        out.println("<p>" + HtmlEscaper.escape(floor.getTraps().get(0).getRiddle()) + "</p>");
-                    }
-                %>
-            </div>
+/* 오른쪽 컬럼: 메인 퀴즈와 버튼 */
+.right-column {
+    flex: 2; /* 오른쪽 컬럼이 차지하는 비율 (왼쪽보다 2배 넓게) */
+    padding: 40px;
+    background-color: rgba(10, 10, 10, 0.8); /* 왼쪽보다 조금 더 진한 배경 */
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
 
-            <!-- 입력 폼 그룹 -->
-            <form action="GameServlet" method="post" class="form-group">
-                <input type="hidden" name="action" value="changeFloor">
-                <label for="newFloorInput">층 이동:</label>
-                <input type="text" id="newFloorInput" name="newFloor" placeholder="이동할 층 번호..." required>
-                <button type="submit">이동</button>
-            </form>
-            <form action="GameServlet" method="post" class="form-group">
-                <input type="hidden" name="action" value="submitAnswer">
-                 <label for="answerInput">정답:</label>
-                <input type="text" id="answerInput" name="answer" placeholder="정답 입력..." required>
-                <button type="submit">제출</button>
-            </form>
+/* --- 세부 요소 스타일 --- */
 
-            <!-- 하단 버튼 그룹 -->
-            <div class="button-group">
-                <button onclick="window.location.href='memos.jsp'">메모 보기</button>
-                <button onclick="window.location.href='rules.jsp'">규칙 보기</button>
-                <form action="GameServlet" method="post" style="display:inline;">
-                    <input type="hidden" name="action" value="exitGame">
-                    <button type="submit">체크아웃</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+/* 호텔 로고(제목) 스타일 */
+h1 {
+    font-family: 'Cinzel', serif; /* 제목 전용 클래식 폰트 */
+    color: #c0a172; /* 금색 */
+    text-align: center;
+    font-size: 2.8em;
+}
+
+/* 장식용 석상 이미지 스타일 */
+.decorative-image {
+    width: 80%;
+    max-width: 200px;
+    border-radius: 50%; /* 원형으로 표시 */
+    border: 3px solid #c0a172;
+    margin-bottom: 20px;
+}
+
+/* 게임 정보(플레이어, 층, 기회) 텍스트 스타일 */
+.game-info p {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.game-info strong {
+    color: #c0a172;
+}
+
+/* 퀴즈가 나오는 상자 스타일 */
+.quiz-box {
+    border: 1px dashed #c0a172;
+    padding: 20px;
+    margin: 20px 0;
+    min-height: 120px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* --- 입력창 및 버튼 스타일 --- */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.form-group label {
+    color: #c0a172;
+    margin-right: 10px;
+    width: 60px; /* 라벨 너비 고정 */
+}
+
+input[type="text"] {
+    flex-grow: 1; /* 남는 공간을 모두 차지 */
+    padding: 10px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #fff;
+}
+
+/* 모든 버튼의 공통 스타일 */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #000;
+    background: linear-gradient(145deg, #d4b281, #b09162); /* 금색 그라데이션 */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s; /* 부드러운 전환 효과 */
+}
+
+/* 버튼에 마우스를 올렸을 때 효과 */
+button:hover {
+    transform: translateY(-2px); /* 살짝 위로 이동 */
+    box-shadow: 0 4px 8px rgba(204, 169, 114, 0.3); /* 빛나는 효과 */
+}
+
+.button-group {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* --- 반응형 디자인 (화면이 작아졌을 때) --- */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* 가로 배치를 세로 배치로 변경 */
+    }
+
+    .right-column {
+        border-radius: 0 0 15px 15px; /* 모서리 둥글게 수정 */
+    }
+}
 
