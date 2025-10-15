@@ -8,6 +8,10 @@ import java.util.Random;
 
 //게임 처음 시작시 초기 데이터 생성
 public class GameDataInitializer {
+    // 최종 층수와 특수 층 번호를 상수로 관리합니다.
+    private static final int FINAL_FLOOR = 22;
+    private static final int SPECIAL_FLOOR = 7;
+
     private static final List<Trap> ALL_TRAPS = Arrays.asList(
             new Trap("숫자 퍼즐", "2, 4, 6, 8... 다음 숫자는?", "10"),
             new Trap("단어 퍼즐", "개구리가 가장 좋아하는 음식은?", "파리"),
@@ -39,18 +43,28 @@ public class GameDataInitializer {
     );
     // 게임이 처음 시작될 때의 상태
     public static GameState createInitialState(){
-        Floor floor1 = new Floor(1, new ArrayList<>());
-
-        List<Floor> quizFloors = new ArrayList<>();
-        Collections.shuffle(ALL_TRAPS, new Random());
-        for (int i = 0; i < 27; i++){
-            List<Trap> uniqueTrap = Arrays.asList(ALL_TRAPS.get(i));
-            quizFloors.add(new Floor(i+2, uniqueTrap));
-        }
-
         List<Floor> gameFloors = new ArrayList<>();
-        gameFloors.add(floor1);
-        gameFloors.addAll(quizFloors);
+        // 1층 추가
+        gameFloors.add(new Floor(1, new ArrayList<>()));
+
+        // 퀴즈들을 섞습니다.
+        List<Trap> shuffledTraps = new ArrayList<>(ALL_TRAPS);
+        Collections.shuffle(shuffledTraps, new Random());
+
+        int trapIndex = 0;
+        // 2층부터 최종 층까지 생성
+        for (int i = 2; i <= FINAL_FLOOR; i++){
+            // ⭐ 수정: 7층은 퀴즈가 없는 특수 층으로 생성합니다.
+            if (i == SPECIAL_FLOOR) {
+                gameFloors.add(new Floor(i, new ArrayList<>()));
+            } else {
+                // 퀴즈가 부족하지 않도록 확인
+                if (trapIndex < shuffledTraps.size()){
+                    List<Trap> uniqueTrap = Arrays.asList(shuffledTraps.get(trapIndex++));
+                    gameFloors.add(new Floor(i, uniqueTrap));
+                }
+            }
+        }
 
         return new GameState(1, null, new ArrayList<>(), gameFloors, new ArrayList<>(), new ArrayList<>(), 2, new ArrayList<>());
     }

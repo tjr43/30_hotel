@@ -17,7 +17,7 @@ body {
     transition: background-image 0.5s ease-in-out; /* 배경이 부드럽게 바뀌는 효과 */
 }
 
-/* ▼▼▼ 추가된 부분: 1층일 때만 적용되는 특별 스타일 ▼▼▼ */
+/* 1층일 때만 적용되는 특별 스타일 */
 body.floor-1 {
     background-image: url('../images/lobby.jpg'); /* 1층 전용 로비 배경 */
 }
@@ -121,5 +121,45 @@ button:hover {
 .button-group {
     text-align: center;
     margin-top: 20px;
+}
+
+/* ▼▼▼ 추가된 부분: 엘리베이터 이동 효과를 위한 오버레이 스타일 ▼▼▼ */
+.elevator-overlay {
+    position: fixed; /* 화면에 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95); /* 반투명 검은 배경 */
+    color: white;
+    display: none; /* 평소에는 숨김 */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000; /* 다른 요소들 위에 표시 */
+    font-family: 'Cinzel', serif;
+    font-size: 2em;
+    opacity: 0; /* 초기 투명도 */
+    transition: opacity 0.3s ease-in-out; /* 부드럽게 나타나는 효과 */
+}
+
+.elevator-overlay.show {
+    display: flex; /* 'show' 클래스가 추가되면 보이게 함 */
+    opacity: 1; /* 불투명하게 만듦 */
+}
+
+/* 엘리베이터 층 표시기 같은 간단한 애니메이션 */
+.elevator-indicator {
+    width: 10px;
+    height: 80px;
+    background-color: #c0a172;
+    margin-bottom: 20px;
+    animation: loading 1.5s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% { transform: scaleY(0.5); }
+    50% { transform: scaleY(1.5); }
+    100% { transform: scaleY(0.5); }
 }
 

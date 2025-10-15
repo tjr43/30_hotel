@@ -1,0 +1,134 @@
+/* 외부 구글 폰트 불러오기 */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+/* --- 기본 스타일 (메모, 규칙 페이지) --- */
+body {
+    background-image: url('../images/Note.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333; /* 밝은 배경에 맞춰 어두운 글씨색 */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- ▼▼▼ 추가된 부분: 체크아웃/게임오버 전용 스타일 ▼▼▼ --- */
+body.ending-page {
+    background-image: url('../images/Endingdoor.jpg'); /* 엔딩 전용 배경 */
+    color: #e0e0e0; /* 어두운 배경에 맞춰 밝은 글씨색 */
+}
+
+/* 엔딩 페이지의 컨테이너는 어둡게 설정 */
+body.ending-page .container {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* 엔딩 페이지의 제목 색상 변경 */
+body.ending-page h1 {
+    color: #c0a172;
+}
+/* --- ▲▲▲ 추가된 부분 종료 ▲▲▲ --- */
+
+
+/* --- 메인 컨테이너 --- */
+.container {
+    width: 90%;
+    max-width: 800px;
+    background-color: rgba(255, 255, 255, 0.85); /* 노트 배경에 맞는 밝은 컨테이너 */
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid #c0a172;
+    padding: 40px;
+    text-align: center;
+}
+
+/* --- 제목 스타일 --- */
+h1 {
+    font-family: 'Cinzel', serif;
+    color: #8c734b;
+    font-size: 2.5em;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* --- 버튼 그룹 --- */
+.button-group {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* 모든 버튼의 공통 스타일 */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background: linear-gradient(145deg, #a88a5f, #8c734b);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1em;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(140, 115, 75, 0.4);
+}
+
+/* --- 메모 페이지 전용 스타일 --- */
+.memo-list {
+    text-align: left;
+    max-height: 40vh;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.memo-item {
+    background-color: rgba(0, 0, 0, 0.03);
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 3px solid #bca179;
+}
+.memo-player {
+    font-weight: bold;
+    color: #8c734b;
+}
+.memo-content {
+    margin: 5px 0 0 0;
+}
+
+/* --- 규칙 페이지 전용 스타일 --- */
+.rules-content {
+    text-align: left;
+    white-space: pre-wrap;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* --- 게임오버/성공 페이지 전용 스타일 --- */
+textarea {
+    width: 80%;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #333;
+    height: 80px;
+    margin-bottom: 15px;
+}
+
+/* 엔딩 페이지의 textarea 스타일 */
+body.ending-page textarea {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #fff;
+}
+

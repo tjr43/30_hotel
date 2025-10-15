@@ -4,23 +4,30 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>실패</title>
+    <title>호텔 면목 - 실패</title>
+    <link rel="stylesheet" href="css/page_style.css">
 </head>
-<body>
-    <h1>게임 오버!</h1>
-    <p>
-        <%-- 서블릿에서 전달된 동적 게임오버 메시지를 표시합니다. --%>
-        <% if (request.getAttribute("message") != null) { %>
-            <%= HtmlEscaper.escape((String)request.getAttribute("message")) %>
-            <br>
-        <% } %>
-        다음 플레이어를 위한 메모를 남겨주세요.
-    </p>
-    <form action="SaveMemoServlet" method="post">
-        <input type="hidden" name="status" value="fail">
-        <textarea name="memo" rows="4" cols="50" placeholder="메모를 입력하세요"></textarea>
-        <br><br>
-        <button type="submit">메모 저장</button>
-    </form>
+<!-- body 태그에 'ending-page' 클래스를 추가합니다. -->
+<body class="ending-page">
+    <div class="container">
+        <h1>Game Over</h1>
+        <p>
+            <% if (request.getAttribute("message") != null) { %>
+                <%= HtmlEscaper.escape((String)request.getAttribute("message")) %>
+            <% } %>
+        </p>
+        <p>다음 손님을 위해 기록을 남겨주시겠어요?</p>
+        <form action="SaveMemoServlet" method="post">
+            <input type="hidden" name="status" value="fail">
+            <textarea name="memo" rows="4" cols="50" placeholder="이곳에 기록을 남겨주세요..."></textarea>
+            <div class="button-group">
+                <button type="submit">기록 남기기</button>
+            </div>
+        </form>
+         <div class="button-group">
+            <button onclick="window.location.href='start.jsp'">다시 시작하기</button>
+        </div>
+    </div>
 </body>
 </html>
+
