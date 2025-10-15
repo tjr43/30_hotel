@@ -4,23 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7bd66565-0fbb-4f5e-a368-6166e696fdce" name="Changes" comment="그림추가">
-      <change afterPath="$PROJECT_DIR$/src/main/webapp/css/page_style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="7bd66565-0fbb-4f5e-a368-6166e696fdce" name="Changes" comment="수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameDataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameDataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/GameServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/SaveMemoServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/SaveMemoServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/StartGameServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ex_mmhotel/StartGameServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/check_session.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/check_session.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/css/hotel_style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/css/hotel_style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/game.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/game.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/gameover.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/gameover.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/goodbye.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/goodbye.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/memos.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/memos.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/rules.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/rules.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/txtfile/edithotel.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/txtfile/edithotel.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +34,12 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="Ex_30" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Ex_30" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="gretty" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -162,11 +153,20 @@
       <option name="project" value="LOCAL" />
       <updated>1760515809823</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="수정">
+      <option name="closed" value="true" />
+      <created>1760537150052</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1760537150052</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="그림추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="그림추가" />
+    <MESSAGE value="수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="수정" />
   </component>
 </project>
