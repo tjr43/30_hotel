@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="start-container">
-        <img src="images/statue.jpg" alt="호텔의 전체적인 사진" class="hotel-image">
         <h1>Hotel Myunmok</h1>
         <p>호텔에 입장하시려면 성함을 알려주십시오.</p>
         <form action="StartGameServlet" method="post">
@@ -18,3 +17,4 @@
     </div>
 </body>
 </html>
+

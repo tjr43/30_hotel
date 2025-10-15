@@ -1,9 +1,9 @@
 /* 외부 구글 폰트 불러오기: 제목용(Cinzel)과 내용용(Noto Sans KR) */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
-/* --- 전체 페이지의 기본 스타일 --- */
+/* --- 전체 페이지의 기본 스타일 (2층 이상) --- */
 body {
-    background-image: url('../images/background.jpg');
+    background-image: url('../images/background.jpg'); /* 기본 복도 배경 */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -14,18 +14,23 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    transition: background-image 0.5s ease-in-out; /* 배경이 부드럽게 바뀌는 효과 */
+}
+
+/* ▼▼▼ 추가된 부분: 1층일 때만 적용되는 특별 스타일 ▼▼▼ */
+body.floor-1 {
+    background-image: url('../images/lobby.jpg'); /* 1층 전용 로비 배경 */
 }
 
 /* --- 메인 컨테이너 (단일 컬럼) --- */
 .container {
     width: 90%;
-    max-width: 700px; /* 너비를 약간 줄여 중앙 집중도를 높임 */
-    background-color: rgba(0, 0, 0, 0.75); /* 배경을 약간 더 어둡게 */
+    max-width: 700px;
+    background-color: rgba(0, 0, 0, 0.75);
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     border: 1px solid #c0a172;
     padding: 40px;
-    /* 추가된 부분: 화면 중앙에 오도록 함 */
     margin: auto;
 }
 
@@ -41,7 +46,7 @@ h1 {
     margin-top: 0;
 }
 
-/* 게임 정보(플레이어, 층, 기회) 텍스트 스타일 */
+/* 게임 정보(플레이어, 기회) 텍스트 스타일 */
 .game-info {
     display: flex;
     justify-content: space-around;
@@ -53,7 +58,7 @@ h1 {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 10px;
     border-radius: 5px;
-    margin: 0 10px; /* 좌우 마진 추가 */
+    margin: 0 10px;
     flex-grow: 1;
     font-size: 1.1em;
 }
@@ -87,7 +92,7 @@ h1 {
 }
 
 input[type="text"] {
-    flex-grow: 1; /* 남는 공간을 모두 차지 */
+    flex-grow: 1;
     padding: 10px;
     background-color: #333;
     border: 1px solid #555;
@@ -101,16 +106,16 @@ button {
     border: none;
     border-radius: 5px;
     color: #000;
-    background: linear-gradient(145deg, #d4b281, #b09162); /* 금색 그라데이션 */
+    background: linear-gradient(145deg, #d4b281, #b09162);
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s; /* 부드러운 전환 효과 */
+    transition: all 0.2s;
 }
 
 /* 버튼에 마우스를 올렸을 때 효과 */
 button:hover {
-    transform: translateY(-2px); /* 살짝 위로 이동 */
-    box-shadow: 0 4px 8px rgba(204, 169, 114, 0.3); /* 빛나는 효과 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(204, 169, 114, 0.3);
 }
 
 .button-group {

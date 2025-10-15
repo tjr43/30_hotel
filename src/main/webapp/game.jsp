@@ -16,20 +16,20 @@
     <title>호텔 면목</title>
     <link rel="stylesheet" href="css/hotel_style.css">
 </head>
-<body>
+<%-- ▼▼▼ 수정된 부분: 현재 층이 1층일 때 body에 'floor-1' 클래스를 추가합니다. ▼▼▼ --%>
+<body class="<%= (currentFloor == 1) ? "floor-1" : "" %>">
     <div class="container">
         <h1>Hotel Myunmok</h1>
 
         <div class="game-info">
-            <p><strong>GUEST</strong><br><%= HtmlEscaper.escape(currentPlayerId) %></p>
-            <%-- 현재 층 정보는 제거 --%>
-            <p><strong>KEYS LEFT</strong><br><%= attemptsLeft %></p>
+            <p><strong>손님</strong><br><%= HtmlEscaper.escape(currentPlayerId) %></p>
+            <p><strong>현재 층</strong><br><%= currentFloor %></p>
+            <p><strong>남은 기회</strong><br><%= attemptsLeft %></p>
         </div>
 
         <div class="quiz-box">
             <%
                 if (request.getAttribute("message") != null) {
-                    // "안내데스크"를 "방송"으로 변경
                     out.println("<p><strong>[방송]</strong> " + HtmlEscaper.escape((String)request.getAttribute("message")) + "</p>");
                 }
                 if (currentFloor == 1) {
