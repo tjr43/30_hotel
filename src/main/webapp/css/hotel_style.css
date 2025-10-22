@@ -1,9 +1,9 @@
 /* 외부 구글 폰트 불러오기: 제목용(Cinzel)과 내용용(Noto Sans KR) */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
-/* --- 전체 페이지의 기본 스타일 (2층 이상) --- */
+/* --- 전체 페이지의 기본 스타일 --- */
 body {
-    background-image: url('../images/background.jpg'); /* 기본 복도 배경 */
+    /* 기본 배경 설정은 제거하고, 공통 스타일만 남겨둡니다. */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -14,13 +14,37 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    transition: background-image 0.5s ease-in-out; /* 배경이 부드럽게 바뀌는 효과 */
+    transition: background-image 0.5s ease-in-out;
 }
 
-/* 1층일 때만 적용되는 특별 스타일 */
+/* --- 각 배경 이미지에 대한 개별 클래스를 정의합니다. --- */
+
+/* 1층 전용 로비 배경 */
 body.floor-1 {
-    background-image: url('../images/lobby.jpg'); /* 1층 전용 로비 배경 */
+    background-image: url('../images/lobby.jpg');
 }
+
+/* 2~30층 랜덤 배경 1 */
+body.bg-1 {
+    background-image: url('../images/background.jpg');
+}
+
+/* 2~30층 랜덤 배경 2 */
+body.bg-2 {
+    background-image: url('../images/background2.jpg');
+}
+
+/* 2~30층 랜덤 배경 3 */
+body.bg-3 {
+    background-image: url('../images/background3.jpg');
+}
+
+
+/* 함정 메시지가 활성화되면 메인 컨테이너를 숨깁니다. */
+body.trap-active .container {
+    display: none;
+}
+
 
 /* --- 메인 컨테이너 (단일 컬럼) --- */
 .container {
@@ -123,7 +147,7 @@ button:hover {
     margin-top: 20px;
 }
 
-/* ▼▼▼ 추가된 부분: 엘리베이터 이동 효과를 위한 오버레이 스타일 ▼▼▼ */
+/* 엘리베이터 이동 효과를 위한 오버레이 스타일 */
 .elevator-overlay {
     position: fixed; /* 화면에 고정 */
     top: 0;

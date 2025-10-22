@@ -2,34 +2,52 @@
 <%@ page import="Ex_mmhotel.GameState" %>
 <%@ page import="Ex_mmhotel.Floor" %>
 <%@ page import="Ex_mmhotel.HtmlEscaper" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.*" %>
 <%
-    // --- 페이지의 모든 로직을 이 한 곳에서 처리합니다. ---
-    GameState gameState = (GameState) session.getAttribute("gameState");
+    // --- 안정성을 높인 중앙 로직 블록 ---
+    GameState gameState = null;
+    int currentFloor = 1;
+    String currentPlayerId = "Unknown";
+    int attemptsLeft = 0;
+    boolean isCurrentFloorCleared = false;
+    boolean isFirstVisit = false;
+    String trapMessage = null;
+    Boolean playReturnSound = null;
+    List<Floor> gameFloors = new ArrayList<>();
+
+    // 1부터 3까지의 랜덤 숫자를 생성합니다.
+    int randomBgIndex = new Random().nextInt(3) + 1;
+
+    Object gameStateObj = session.getAttribute("gameState");
+    if (gameStateObj instanceof GameState) {
+        gameState = (GameState) gameStateObj;
+    }
+
     if (gameState == null) {
         response.sendRedirect("start.jsp");
         return;
     }
 
-    int currentFloor = gameState.getCurrentFloor();
-    String currentPlayerId = gameState.getCurrentPlayerId();
-    int attemptsLeft = gameState.getAttemptsLeft();
-    boolean isCurrentFloorCleared = gameState.getCompletedFloorsByPlayer()
-                                             .getOrDefault(currentPlayerId, Collections.emptySet())
-                                             .contains(currentFloor);
+    currentFloor = gameState.getCurrentFloor();
+    currentPlayerId = gameState.getCurrentPlayerId() != null ? gameState.getCurrentPlayerId() : "Unknown";
+    attemptsLeft = gameState.getAttemptsLeft();
+    gameFloors = gameState.getGameFloors() != null ? gameState.getGameFloors() : new ArrayList<>();
 
-    boolean isFirstVisit = session.getAttribute("isFirstVisit") != null && (Boolean)session.getAttribute("isFirstVisit");
-    if(isFirstVisit) {
+    if (gameState.getCompletedFloorsByPlayer() != null) {
+        isCurrentFloorCleared = gameState.getCompletedFloorsByPlayer()
+                                     .getOrDefault(currentPlayerId, Collections.emptySet())
+                                     .contains(currentFloor);
+    }
+
+    Object firstVisitObj = session.getAttribute("isFirstVisit");
+    if (firstVisitObj instanceof Boolean && (Boolean)firstVisitObj) {
+        isFirstVisit = true;
         session.setAttribute("isFirstVisit", false);
     }
 
-    // 함정 메시지나 1층 복귀 사운드 신호를 받습니다.
-    String trapMessage = (String) request.getAttribute("trapMessage");
-    Boolean playReturnSound = (Boolean) request.getAttribute("playReturnSound");
+    trapMessage = (String) request.getAttribute("trapMessage");
+    playReturnSound = (Boolean) request.getAttribute("playReturnSound");
 %>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,8 +55,7 @@
     <title>호텔 면목</title>
     <link rel="stylesheet" href="css/hotel_style.css">
 </head>
-<!-- 1층일 경우와 함정 메시지가 있을 경우 body에 다른 클래스를 부여합니다. -->
-<body class="<%= (trapMessage != null) ? "trap-active" : (currentFloor == 1 ? "floor-1" : "") %>">
+<body class="<%= (trapMessage != null) ? "trap-active" : (currentFloor == 1 ? "floor-1" : "bg-" + randomBgIndex) %>">
 
     <div class="elevator-overlay" id="elevatorOverlay">
         <div class="elevator-indicator"></div>
@@ -46,7 +63,6 @@
     </div>
 
     <%
-        // ★★★ 버그 수정: return; 대신, 함정 메시지가 있을 때는 게임 컨테이너를 아예 그리지 않는 방식으로 변경 ★★★
         if (trapMessage == null) {
     %>
     <div class="container">
@@ -68,14 +84,12 @@
                     out.println("<p>이곳에서는 기묘한 일들이 벌어지곤 합니다... 부디, 조심하십시오.</p>");
                 } else if (currentFloor == 1) {
                     out.println("<p>1층 로비입니다. 다음 층으로 이동하세요.</p>");
-                } else {
-                    List<Floor> gameFloors = gameState.getGameFloors();
+                } else if(gameFloors.size() > (currentFloor -1) && currentFloor > 0) {
                     Floor floor = gameFloors.get(currentFloor - 1);
-
                     if (currentFloor == 7) {
                         out.println("<p>--- 7층 휴식 공간 ---</p>");
                         out.println("<p>이곳은 잠시 쉬어갈 수 있는 공간입니다. 편히 머물다 다음 층으로 이동하세요.</p>");
-                    } else {
+                    } else if (floor.getTraps() != null && !floor.getTraps().isEmpty()){
                         out.println("<p>--- " + floor.getFloorNumber() + "층입니다. ---</p>");
                         out.println("<p><b>[방송]</b> " + HtmlEscaper.escape(floor.getTraps().get(0).getDescription()) + "</p>");
                         out.println("<p><b>[문제]</b> " + HtmlEscaper.escape(floor.getTraps().get(0).getRiddle()) + "</p>");
@@ -108,7 +122,7 @@
         </div>
     </div>
     <%
-        } // if (trapMessage == null) 의 끝
+        }
     %>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
@@ -138,8 +152,7 @@
             });
         }
 
-        // 페이지 로드 시 즉시 실행
-        (function() {
+        window.addEventListener('DOMContentLoaded', (event) => {
             <%
                 if (trapMessage != null) {
             %>
@@ -161,7 +174,7 @@
             <%
                 }
             %>
-        })();
+        });
     </script>
 </body>
 </html>
