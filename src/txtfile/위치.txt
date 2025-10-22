@@ -1,0 +1,1 @@
+%USERPROFILE%\.hotel_game_data
